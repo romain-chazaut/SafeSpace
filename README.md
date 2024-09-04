@@ -61,3 +61,45 @@ En cas de problèmes :
 1. Vérifiez l'installation de Docker et Docker Compose.
 2. Assurez-vous qu'aucun autre service n'utilise les ports 5432 et 8080.
 3. Consultez les logs avec `docker-compose logs`.
+
+ ---------------------------------------------------------------------------------------
+
+ 
+## Connexion à pgAdmin
+
+1. Accédez à pgAdmin sur `http://localhost:8080`
+2. Connectez-vous avec :
+- Email : `admin@example.com`
+- Mot de passe : `adminpassword`
+3. Ajoutez un nouveau serveur avec ces détails :
+- Hôte : `db`
+- Port : `5432`
+- Base de données : `postgres`
+- Nom d'utilisateur : `postgres`
+- Mot de passe : `mysecretpassword`
+
+## Test de Connexion avec Postman
+
+1. Ouvrez Postman
+2. Créez une nouvelle requête POST vers `http://localhost:3000/connections`
+3. Définissez le corps en JSON brut avec le contenu suivant :
+Body>raw >JSON
+
+```json
+{
+  "host": "localhost",
+  "port": 5432,
+  "database": "postgres",
+  "user": "postgres",
+  "password": "mysecretpassword"
+}
+
+Response Postman: 
+
+{
+  "id": 1,
+  "host": "localhost",
+  "port": 5432,
+  "database": "postgres",
+  "user": "postgres"
+}
