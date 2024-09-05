@@ -103,3 +103,32 @@ Response Postman:
   "database": "postgres",
   "user": "postgres"
 }
+
+## Arboresence projet w/ Fastify 
+
+project-root/
+│
+├── src/
+│   ├── controllers/
+│   │   ├── connectionController.ts
+│   │   └── ...
+│   │
+│   ├── routes/
+│   │   ├── connection.routes.ts
+│   │   └── ...
+│   │
+│   ├── models/
+│   │   └── ...
+│   │
+│   ├── services/
+│   │   └── ...
+│   │
+│   ├── config/
+│   │   └── ...
+│   │
+│   └── server.ts
+│
+├── tests/
+│
+├── package.json
+└── tsconfig.json
