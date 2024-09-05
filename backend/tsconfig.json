@@ -12,7 +12,7 @@
       "rootDir": "./src",
       "resolveJsonModule": true
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "src/jest.config.js"],
     "exclude": ["node_modules"]
   }
   
