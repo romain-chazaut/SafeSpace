@@ -10,7 +10,7 @@ const Connections = () => {
     const fetchConnections = async () => {
       try {
         const result = await getConnections();
-        setConnections(result);
+        setConnections(result);  // Stocke les connexions récupérées
       } catch (err) {
         setError('Erreur lors de la récupération des connexions');
       } finally {
@@ -26,10 +26,10 @@ const Connections = () => {
 
   return (
     <div>
-      <h1>Connexions</h1>
+      <h1>Liste des connexions</h1>
       <ul>
         {connections.map((connection) => (
-          <li key={connection.id}>{connection.name}</li>
+          <li key={connection.id}>{connection.host}:{connection.port} - {connection.database}</li>
         ))}
       </ul>
     </div>
