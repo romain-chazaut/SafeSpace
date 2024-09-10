@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { Pool, PoolConfig } from 'pg'
-// import ConnectionRequest from '../controllers/connectionController'
 import { ConnectionRequest } from '../routes/types'
 
 
