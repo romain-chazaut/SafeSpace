@@ -35,3 +35,5 @@ coverage/
 # Fastify CLI configuration files
 .fastifyrc
 
+#Backend/Dump
+ backend/src/backup
