@@ -132,3 +132,9 @@ project-root/
 │
 ├── package.json
 └── tsconfig.json
+
+//create-dump
+
+{
+  "database": "nom_de_la_base_a_sauvegarder"
+}

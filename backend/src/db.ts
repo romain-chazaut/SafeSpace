@@ -5,7 +5,7 @@ export function createPool(config: PoolConfig = {}): Pool {
   return new Pool({
     user: process.env.DB_USER || 'postgres',
     host: process.env.DB_HOST || 'localhost', // Utilisez 'localhost' par défaut
-    database: process.env.DB_NAME || 'SafeBase',
+    database: process.env.DB_NAME || 'postgres',
     password: process.env.DB_PASSWORD || 'mysecretpassword',
     port: parseInt(process.env.DB_PORT || '5432'),
     ...config
