@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000';  // URL de base de ton API Fastify
+const API_URL = 'http://localhost:3000';  
 
 // Récupérer toutes les connexions
 export const getConnections = async () => {

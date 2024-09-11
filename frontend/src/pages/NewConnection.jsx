@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createConnection } from '../services/apiService';
+import { useNavigate } from 'react-router-dom';  // Importer pour rediriger après création
 
 const NewConnection = () => {
   const [host, setHost] = useState('');
@@ -9,6 +10,7 @@ const NewConnection = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();  // Initialiser useNavigate
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -17,7 +19,10 @@ const NewConnection = () => {
     try {
       const result = await createConnection(connectionData);
       setSuccess(`Connexion créée avec succès : ${result.host}`);
-      setHost(''); setPort(''); setDatabase(''); setUser(''); setPassword('');  // Reset du formulaire
+      setHost(''); setPort(''); setDatabase(''); setUser(''); setPassword('');  // Réinitialiser le formulaire
+
+      // Rediriger vers la page des connexions après la création
+      navigate('/connections');
     } catch (err) {
       setError('Erreur lors de la création de la connexion');
     }

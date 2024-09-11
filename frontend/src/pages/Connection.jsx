@@ -10,7 +10,7 @@ const Connections = () => {
     const fetchConnections = async () => {
       try {
         const result = await getConnections();
-        setConnections(result);  // Stocke les connexions récupérées
+        setConnections(result);  // Stocker les connexions récupérées
       } catch (err) {
         setError('Erreur lors de la récupération des connexions');
       } finally {
@@ -19,7 +19,7 @@ const Connections = () => {
     };
 
     fetchConnections();
-  }, []);
+  }, []);  // Appel API à chaque chargement de la page
 
   if (loading) return <div>Chargement...</div>;
   if (error) return <div>{error}</div>;
