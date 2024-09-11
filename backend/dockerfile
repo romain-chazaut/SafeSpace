@@ -1,0 +1,20 @@
+FROM node:16
+
+WORKDIR /backend
+
+COPY package*.json ./
+COPY tsconfig.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN apt-get update && apt-get install -y postgresql-client
+
+RUN npm run build
+
+RUN mkdir -p /backend/backups && chmod 777 /backend/backups
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
