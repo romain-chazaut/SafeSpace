@@ -34,7 +34,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_USER=SafeSpace
+      - DB_USER=postgres
       - DB_PASSWORD=mysecretpassword
       - DB_NAME=postgres
     volumes:
