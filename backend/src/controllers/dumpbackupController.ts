@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { BackupService } from '../services/dumpbackservice';
+import { BackupService } from '../services/backupService';
 import { DatabaseConfig } from '../services/types';
 
 export class BackupController {
@@ -11,11 +11,13 @@ export class BackupController {
 
   async createBackup(request: FastifyRequest<{ Body: DatabaseConfig }>, reply: FastifyReply): Promise<void> {
     try {
-      const result = await this.backupService.createDumpAndSaveInfo(request.body);
+      const dumpPath = await this.backupService.createDump(request.body);
+      const backupId = await this.backupService.saveBackupInfo(dumpPath, request.body);
+      
       reply.send({ 
         success: true, 
         message: 'Backup created and information saved successfully', 
-        data: result 
+        backupId 
       });
     } catch (error) {
       request.log.error(error);
