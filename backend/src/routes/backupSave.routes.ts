@@ -1,5 +1,4 @@
-import { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifySchema, FastifyTypeProviderDefault, RawServerDefault, RouteGenericInterface } from 'fastify';
-import { IncomingMessage, ServerResponse } from 'http';
+import { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import { BackupController } from '../controllers/backupSaveController';
 
 const backupSaveRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
@@ -18,13 +17,13 @@ const backupSaveRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
         }
       }
     },
-    async (request, reply: FastifyReply<RawServerDefault, IncomingMessage, ServerResponse<IncomingMessage>, RouteGenericInterface, unknown, FastifySchema, FastifyTypeProviderDefault, unknown>) => {
+    async (request: FastifyRequest<{ Body: { connectedDatabaseName: string } }>, reply: FastifyReply) => {
       await backupController.saveBackupInfo(request, reply);
     }
   );
 
   // Fermer la connexion à la base de données lorsque le serveur s'arrête
-  fastify.addHook('onClose', async (_instance: any) => {
+  fastify.addHook('onClose', async () => {
     await backupController.closeService();
   });
 };

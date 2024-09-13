@@ -19,6 +19,7 @@ export class BackupService {
     });
   }
 
+  // Méthode pour exécuter une commande shell
   private async execCommand(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(command, (error, stdout, stderr) => {
@@ -31,6 +32,7 @@ export class BackupService {
     });
   }
 
+  // Méthode pour créer un dump
   async createDump(dbConfig: DatabaseConfig): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const dumpPath = path.join(this.backupDir, `dump_${dbConfig.database}_${timestamp}.sql`);
@@ -44,14 +46,15 @@ export class BackupService {
     return dumpPath;
   }
 
+  // Méthode pour sauvegarder les infos du dump dans les tables `backup` et `backup_history`
   async saveBackupInfo(backupPath: string, dbConfig: DatabaseConfig): Promise<number> {
     const query = 'INSERT INTO backup (path, timestamp, action, name_database) VALUES ($1, $2, $3, $4) RETURNING id';
     const values = [backupPath, new Date(), 'save', dbConfig.database];
 
     const result = await this.pool.query(query, values);
+    const backupId = result.rows[0].id;
 
     // Insérer dans la table backup_history
-    const backupId = result.rows[0].id;
     const queryHistory = 'INSERT INTO backup_history (backup_id, path, timestamp, action, database_name) VALUES ($1, $2, $3, $4, $5)';
     const valuesHistory = [backupId, backupPath, new Date(), 'save', dbConfig.database];
     await this.pool.query(queryHistory, valuesHistory);
@@ -59,6 +62,14 @@ export class BackupService {
     return backupId;
   }
 
+  // Méthode pour récupérer l'historique des backups
+  async getBackupHistory(): Promise<any[]> {
+    const query = 'SELECT * FROM backup_history ORDER BY timestamp DESC';
+    const result = await this.pool.query(query);
+    return result.rows;
+  }
+
+  // Méthode pour fermer les connexions à la base de données
   async close(): Promise<void> {
     await this.pool.end();
   }
