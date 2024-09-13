@@ -21,3 +21,16 @@ export const createConnection = async (connectionData) => {
   }
   return await response.json();
 };
+
+// Lancer une sauvegarde
+export const launchBackup = async (databaseName) => {
+  const response = await fetch(`${API_URL}/backup/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ database: databaseName }),
+  });
+  if (!response.ok) {
+    throw new Error('Erreur lors de la sauvegarde');
+  }
+  return await response.json();
+};
