@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:latest
 
 WORKDIR /backend
 
@@ -10,8 +10,6 @@ RUN npm install
 COPY . .
 
 RUN apt-get update && apt-get install -y postgresql-client
-
-RUN npm run build
 
 RUN mkdir -p /backend/backups && chmod 777 /backend/backups
 
