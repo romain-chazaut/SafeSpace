@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Dependency directories
+jspm_packages/
+typings/
+.terraform/
+
+# Environment variables
+.env
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Dist directory
+dist/
+
+# VSCode directory
+.vscode/
+
+# MacOS system files
+.DS_Store
+
+# Coverage directory used by testing tools
+coverage/
+
+# Fastify CLI configuration files
+.fastifyrc
+
+#Backend/Dump
+ backend/src/backup
