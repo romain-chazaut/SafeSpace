@@ -6,14 +6,18 @@ import backupRoutes from './routes/backup.routes';
 import connexion from './routes/connexion.routes';
 import { createPool, testConnection } from './db';
 import backupRoutesSave from './routes/dumpbackservice.routes';
+import cronRoutes from './routes/cron.routes'; // Importer les routes cron
 import { BackupService } from './services/backupService'; // Importer le service de sauvegarde
+import { CronService } from './services/CronService'; // Importer le service des tâches cron
 
 const fastify: FastifyInstance = Fastify({
   logger: true
 });
 
+// Décoration de l'instance Fastify avec la connexion à la base de données
 fastify.decorate('db', createPool());
 
+// Configuration du middleware CORS
 fastify.register(cors, {
   origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -21,18 +25,25 @@ fastify.register(cors, {
   credentials: true,
 });
 
+// Enregistrement des routes
 fastify.register(connectionRoutes);
 fastify.register(backupRoutes);
 fastify.register(connexion);
 fastify.register(backupRoutesSave);
+fastify.register(cronRoutes); // Enregistrement des routes cron
 
-// Instancier le service de sauvegarde
+// Instancier le service de sauvegarde et de gestion des crons
 const backupService = new BackupService();
+const cronService = new CronService();
 
 // Configurer la tâche cron à démarrer au lancement du serveur
 const dbConfig = { database: 'test_db' }; // Exemple de config de base de données
-backupService.startCronJob(dbConfig, '0 * * * *'); 
+const cronSchedule = '0 0 * * *'; // Exemple : exécution toutes les heures
 
+// Démarrage de la tâche cron lors du démarrage du serveur
+cronService.startCronJob('hourly-backup', cronSchedule, dbConfig, backupService);
+
+// Démarrage du serveur Fastify
 const start = async () => {
   try {
     const dbStatus = await testConnection(fastify.db);

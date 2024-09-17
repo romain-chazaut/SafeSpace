@@ -7,6 +7,7 @@ import Backup from './pages/Backup';
 import Restore from './pages/Restore';
 import Connections from './pages/Connection';
 import NewConnection from './pages/NewConnection';
+import CronManager from './pages/CronManager'; // Importer CronManager
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <li><Link to="/restore">Restore</Link></li>
           <li><Link to="/connections">Connexions</Link></li>
           <li><Link to="/new-connection">Nouvelle connexion</Link></li>
+          <li><Link to="/cron-manager">Gestion des Crons</Link></li> {/* Lien vers CronManager */}
         </ul>
       </nav>
 
@@ -31,6 +33,7 @@ const App = () => {
         <Route path="/restore" element={<Restore />} />
         <Route path="/connections" element={<Connections />} />
         <Route path="/new-connection" element={<NewConnection />} />
+        <Route path="/cron-manager" element={<CronManager />} /> {/* Route vers CronManager */}
       </Routes>
     </Router>
   );
