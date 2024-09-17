@@ -13,7 +13,7 @@ const History = () => {
         throw new Error('Erreur lors de la récupération de l\'historique des sauvegardes');
       }
       const data = await response.json();
-      setBackups(data.history); // Assumes the response has a "history" field
+      setBackups(data.history); // Assumes the response has a "history" field containing an array of backup objects
     } catch (error) {
       setError(error.message);
     } finally {
@@ -35,13 +35,28 @@ const History = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {!loading && !error && backups.length > 0 ? (
-        <ul>
-          {backups.map((backup, index) => (
-            <li key={index}>
-              Sauvegarde {backup.id} - {new Date(backup.timestamp).toLocaleDateString()} - {backup.database_name}
-            </li>
-          ))}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom de la base de données</th>
+              <th>Date</th>
+              <th>Action</th>
+              <th>Chemin du fichier</th>
+            </tr>
+          </thead>
+          <tbody>
+            {backups.map((backup, index) => (
+              <tr key={index}>
+                <td>{backup.id}</td>
+                <td>{backup.database_name}</td>
+                <td>{new Date(backup.timestamp).toLocaleString()}</td>
+                <td>{backup.action}</td>
+                <td>{backup.path}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         !loading && <p>Aucune sauvegarde disponible pour le moment.</p>
       )}
