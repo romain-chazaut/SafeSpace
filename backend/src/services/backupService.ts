@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { Pool } from 'pg';
 import { DatabaseConfig } from '../services/types';
+import cron from 'node-cron'; // Import de node-cron
 
 export class BackupService {
   private backupDir: string;
@@ -72,5 +73,20 @@ export class BackupService {
   // Méthode pour fermer les connexions à la base de données
   async close(): Promise<void> {
     await this.pool.end();
+  }
+
+  // Méthode pour démarrer le cron
+  startCronJob(dbConfig: DatabaseConfig, schedule: string = '* * * * *') {
+    cron.schedule(schedule, async () => {
+      console.log('Exécution automatique de la sauvegarde selon le cron :', schedule);
+      try {
+        const backupPath = await this.createDump(dbConfig);
+        await this.saveBackupInfo(backupPath, dbConfig);
+        console.log('Sauvegarde automatique réussie');
+      } catch (error) {
+        console.error('Erreur lors de la sauvegarde automatique :', error);
+      }
+    });
+    console.log('Tâche cron planifiée pour :', schedule);
   }
 }

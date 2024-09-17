@@ -5,9 +5,8 @@ import connectionRoutes from './routes/database.routes';
 import backupRoutes from './routes/backup.routes';
 import connexion from './routes/connexion.routes';
 import { createPool, testConnection } from './db';
-import backupSaveRoutes from './routes/backupSave.routes';
 import backupRoutesSave from './routes/dumpbackservice.routes';
-
+import { BackupService } from './services/backupService'; // Importer le service de sauvegarde
 
 const fastify: FastifyInstance = Fastify({
   logger: true
@@ -24,9 +23,15 @@ fastify.register(cors, {
 
 fastify.register(connectionRoutes);
 fastify.register(backupRoutes);
-fastify.register(connexion)
+fastify.register(connexion);
 fastify.register(backupRoutesSave);
 
+// Instancier le service de sauvegarde
+const backupService = new BackupService();
+
+// Configurer la tâche cron à démarrer au lancement du serveur
+const dbConfig = { database: 'test_db' }; // Exemple de config de base de données
+backupService.startCronJob(dbConfig, '0 * * * *'); 
 
 const start = async () => {
   try {
