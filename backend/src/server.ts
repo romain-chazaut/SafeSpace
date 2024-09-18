@@ -5,7 +5,7 @@ import connectionRoutes from './routes/database.routes';
 import backupRoutes from './routes/backup.routes';
 import connexion from './routes/connexion.routes';
 import { createPool, testConnection } from './db';
-import backupSaveRoutes from './routes/backupSave.routes';
+// import backupSaveRoutes from './routes/backupSave.routes';
 import backupRoutesSave from './routes/dumpbackservice.routes';
 
 
@@ -26,6 +26,7 @@ fastify.register(connectionRoutes);
 fastify.register(backupRoutes);
 fastify.register(connexion)
 fastify.register(backupRoutesSave);
+
 
 
 const start = async () => {
