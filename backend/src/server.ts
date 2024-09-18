@@ -36,13 +36,6 @@ fastify.register(cronRoutes); // Enregistrement des routes cron
 const backupService = new BackupService();
 const cronService = new CronService();
 
-// Configurer la tâche cron à démarrer au lancement du serveur
-const dbConfig = { database: 'test_db' }; // Exemple de config de base de données
-const cronSchedule = '0 0 * * *'; // Exemple : exécution toutes les heures
-
-// Démarrage de la tâche cron lors du démarrage du serveur
-cronService.startCronJob('hourly-backup', cronSchedule, dbConfig, backupService);
-
 // Démarrage du serveur Fastify
 const start = async () => {
   try {
