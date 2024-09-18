@@ -10,7 +10,7 @@ export class BackupServiceSave {
     this.pool = new Pool({
       host: 'db',
       port: 5432,
-      database: 'SafeBase',
+      database: 'SafeSpace',
       user: 'postgres',
       password: 'mysecretpassword'
     });

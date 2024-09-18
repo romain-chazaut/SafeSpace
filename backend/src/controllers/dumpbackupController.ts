@@ -3,60 +3,73 @@ import { BackupService } from '../services/backupService';
 import { DatabaseConfig } from '../services/types';
 
 export class BackupController {
+  closeService() {
+    throw new Error('Method not implemented.');
+  }
   private backupService: BackupService;
 
   constructor() {
     this.backupService = new BackupService();
   }
 
-  // Méthode pour récupérer l'historique des backups
-  async getBackupHistory(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+  async createBackup(request: FastifyRequest<{ Body: DatabaseConfig }>, reply: FastifyReply) {
+    try {
+      const dbConfig = request.body;
+      console.log('Creating backup for database:', dbConfig.database);
+
+      const dumpPath = await this.backupService.createDump(dbConfig);
+      const backupId = await this.backupService.saveBackupInfo(dumpPath, dbConfig);
+
+      return reply.code(200).send({ success: true, message: 'Backup created successfully', backupId });
+    } catch (error) {
+      console.error('Error in createBackup:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return reply.code(500).send({ success: false, message: 'Backup creation failed', error: errorMessage });
+    }
+  }
+
+  async getBackupHistory(request: FastifyRequest, reply: FastifyReply) {
     try {
       const history = await this.backupService.getBackupHistory();
-      reply.send({ success: true, history });
+      return reply.code(200).send({ success: true, history });
     } catch (error) {
-      if (request && request.log) {
-        request.log.error(error);
-      }
-      
-      if (reply && typeof reply.code === 'function') {
-        reply.code(500).send({ 
-          success: false, 
-          message: 'Failed to retrieve backup history', 
-          error: error instanceof Error ? error.message : 'Unknown error' 
-        });
-      } else {
-        console.error('Error retrieving backup history:', error);
-        // En dernier recours, afficher une erreur si `reply` n'est pas disponible
-      }
+      console.error('Error in getBackupHistory:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return reply.code(500).send({ success: false, message: 'Failed to retrieve backup history', error: errorMessage });
     }
   }
 
-  // Méthode pour créer un backup
-  async createBackup(request: FastifyRequest<{ Body: DatabaseConfig }>, reply: FastifyReply): Promise<void> {
+  async restoreDatabase(request: FastifyRequest<{ Body: { sourceDatabaseId: string; targetDatabaseName: string } }>, reply: FastifyReply) {
     try {
-      const dumpPath = await this.backupService.createDump(request.body);
-      const backupId = await this.backupService.saveBackupInfo(dumpPath, request.body);
-      reply.send({ success: true, message: 'Backup created and information saved successfully', backupId });
-    } catch (error) {
-      if (request && request.log) {
-        request.log.error(error);
+      const { sourceDatabaseId, targetDatabaseName } = request.body;
+      console.log(`Attempting to restore database. Source: ${sourceDatabaseId}, Target: ${targetDatabaseName}`);
+
+      // Vérifier si des sauvegardes existent pour la base de données source
+      const backups = await this.backupService.listBackups(sourceDatabaseId);
+      if (backups.length === 0) {
+        return reply.code(404).send({ success: false, message: `No backups found for database ${sourceDatabaseId}` });
       }
 
-      if (reply && typeof reply.code === 'function') {
-        reply.code(500).send({ 
-          success: false, 
-          message: 'Backup creation or information saving failed', 
-          error: error instanceof Error ? error.message : 'Unknown error' 
-        });
-      } else {
-        console.error('Error creating backup:', error);
+      await this.backupService.restoreDatabase(sourceDatabaseId, targetDatabaseName);
+      return reply.code(200).send({ success: true, message: 'Database restored successfully' });
+    } catch (error) {
+      console.error('Error in restoreDatabase:', error);
+      if (error instanceof Error && error.message.includes('Aucun backup trouvé')) {
+        return reply.code(404).send({ success: false, message: error.message });
       }
+      return reply.code(500).send({ success: false, message: 'Database restoration failed', error: error instanceof Error ? error.message : 'Unknown error' });
     }
   }
 
-  // Méthode pour fermer les services
-  async closeService(): Promise<void> {
-    await this.backupService.close();
+  async listBackups(request: FastifyRequest<{ Querystring: { databaseName?: string } }>, reply: FastifyReply) {
+    try {
+      const { databaseName } = request.query;
+      const backups = await this.backupService.listBackups(databaseName);
+      return reply.code(200).send({ success: true, backups });
+    } catch (error) {
+      console.error('Error in listBackups:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return reply.code(500).send({ success: false, message: 'Failed to list backups', error: errorMessage });
+    }
   }
 }

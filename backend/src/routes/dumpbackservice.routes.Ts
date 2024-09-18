@@ -4,6 +4,11 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { BackupController } from '../controllers/dumpbackupController';
 import { DatabaseConfig } from '../services/types';
 
+interface RestoreDatabaseBody {
+  sourceDatabaseId: string;
+  targetDatabaseId: string;
+}
+
 export default async function backupRoutesSave(fastify: FastifyInstance) {
   const backupController = new BackupController();
 
@@ -27,7 +32,12 @@ export default async function backupRoutesSave(fastify: FastifyInstance) {
     await backupController.getBackupHistory(request, reply);
   });
 
+  fastify.post<{
+    Body: { sourceDatabaseId: string; targetDatabaseName: string }
+  }>('/backups/restore', async (request, reply) => {
+    return backupController.restoreDatabase(request, reply);
+  });
   fastify.addHook('onClose', async () => {
-    await backupController.closeService();
+    backupController.closeService();
   });
 }
