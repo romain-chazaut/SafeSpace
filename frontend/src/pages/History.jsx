@@ -1,3 +1,4 @@
+import '../assets/css/Histoirque.css';
 import React, { useEffect, useState } from 'react';
 
 const History = () => {
@@ -27,24 +28,26 @@ const History = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Historique des sauvegardes</h1>
-      <p>Ici, vous pouvez consulter l'historique de toutes les sauvegardes effectuées.</p>
+    <div className="main-content">
+      <div className="centered-content history">
+        <h1>Historique des sauvegardes</h1>
+        <p>Ici, vous pouvez consulter l'historique de toutes les sauvegardes effectuées.</p>
 
-      {loading && <p>Chargement de l'historique...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+        {loading && <p>Chargement de l'historique...</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {!loading && !error && backups.length > 0 ? (
-        <ul>
-          {backups.map((backup, index) => (
-            <li key={index}>
-              Sauvegarde {backup.id} - {new Date(backup.timestamp).toLocaleDateString()} - {backup.database_name}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        !loading && <p>Aucune sauvegarde disponible pour le moment.</p>
-      )}
+        {!loading && !error && backups.length > 0 ? (
+          <ul>
+            {backups.map((backup, index) => (
+              <li key={index}>
+                Sauvegarde {backup.id} - {new Date(backup.timestamp).toLocaleDateString()} - {backup.database_name}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          !loading && <p>Aucune sauvegarde disponible pour le moment.</p>
+        )}
+      </div>
     </div>
   );
 };

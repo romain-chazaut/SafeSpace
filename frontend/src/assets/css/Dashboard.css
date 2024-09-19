@@ -1,0 +1,31 @@
+.main-content {
+    margin-left: 200px; /* Ajustez cette valeur selon la largeur de votre menu latéral */
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .centered-content {
+    max-width: 800px;
+    width: 100%;
+  }
+
+
+.dashboard {
+  background-color: #e3f2fd; /* Bleu clair */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard h1 {
+  color: #1565c0; /* Bleu foncé pour le titre */
+  margin-bottom: 20px;
+}
+
+.dashboard p {
+  margin-bottom: 15px;
+  color: #333;
+}

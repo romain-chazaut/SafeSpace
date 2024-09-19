@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../assets/css/Backup.css';
 
 const Backup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Hook pour la navigation
+  const navigate = useNavigate();
 
   const handleBackup = async () => {
     setLoading(true);
@@ -13,11 +14,10 @@ const Backup = () => {
       const response = await fetch('http://localhost:3000/backup/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ database: 'postgres' }), // Remplace par le nom de la base de données
+        body: JSON.stringify({ database: 'postgres' }),
       });
 
       if (response.ok) {
-        // Redirige vers la page Historique après une sauvegarde réussie
         navigate('/history');
       } else {
         setError('Erreur lors du lancement de la sauvegarde.');
@@ -30,13 +30,15 @@ const Backup = () => {
   };
 
   return (
-    <div>
-      <h1>Backup</h1>
-      <p>Lancer une sauvegarde manuelle des bases de données.</p>
-      <button onClick={handleBackup} disabled={loading}>
-        {loading ? 'Sauvegarde en cours...' : 'Lancer une sauvegarde'}
-      </button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="main-content">
+      <div className="centered-content backup">
+        <h1>Backup</h1>
+        <p>Lancer une sauvegarde manuelle des bases de données.</p>
+        <button onClick={handleBackup} disabled={loading}>
+          {loading ? 'Sauvegarde en cours...' : 'Lancer une sauvegarde'}
+        </button>
+        {error && <p className="error">{error}</p>}
+      </div>
     </div>
   );
 };

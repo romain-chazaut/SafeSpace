@@ -1,0 +1,41 @@
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .centered-content {
+    max-width: 800px;
+    width: 100%;
+  }
+  
+  .database {
+    background-color: #d1c4e9; /* Violet clair, vous pouvez ajuster cette couleur */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .database h1 {
+    color: #4a148c; /* Violet foncé pour le titre */
+    margin-bottom: 20px;
+  }
+  
+  .database p {
+    margin-bottom: 20px;
+  }
+  
+  .database ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .database li {
+    background-color: #fff;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }

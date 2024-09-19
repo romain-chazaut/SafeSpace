@@ -10,20 +10,58 @@ body {
   background-color: #ffffff;
   color: #000000;
   line-height: 1.6;
+  display: flex;
 }
 
-/* Conteneur principal pour centrer le contenu */
+/* Navigation latérale */
+nav {
+  width: 200px;
+  height: 100vh;
+  background-color: #000000;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  border-right: 1px solid #ddd;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+nav ul li {
+  margin-bottom: 15px;
+}
+
+nav ul li a {
+  color: #000000;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+  display: block;
+  padding: 5px 0;
+}
+
+nav ul li a:hover {
+  color: #555555;
+}
+
+/* Conteneur principal pour le contenu */
 .container {
   max-width: 800px;
   margin: 50px auto;
+  margin-left: 220px; /* Ajusté pour laisser de l'espace pour le menu latéral */
   padding: 20px;
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-grow: 1;
 }
 
-/* En-tête */
+/* Le reste du CSS reste inchangé */
+
 h1 {
   font-size: 2.5rem;
   color: #000000;
@@ -32,7 +70,6 @@ h1 {
   font-weight: 700;
 }
 
-/* Formulaires */
 form {
   margin-bottom: 20px;
 }
@@ -70,7 +107,6 @@ button:hover {
   background-color: #333333;
 }
 
-/* Messages d'erreur et de succès */
 p.error {
   color: #e74c3c;
   background-color: #fce4e4;
@@ -87,7 +123,6 @@ p.success {
   margin-bottom: 20px;
 }
 
-/* Listes */
 ul {
   list-style: none;
   padding: 0;
@@ -102,33 +137,37 @@ li {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   color: #000000;
 }
-
-/* Navigation */
-nav {
-  background-color: #ffffff;
-  padding: 15px;
-  text-align: center;
-  margin-bottom: 30px;
-  border-bottom: 1px solid #ddd;
+/* Navigation latérale */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #000; /* Fond noir */
+  padding: 20px;
 }
 
-nav ul {
+.sidebar ul {
   list-style-type: none;
   padding: 0;
 }
 
-nav ul li {
-  display: inline;
-  margin-right: 15px;
+.sidebar li {
+  margin-bottom: 15px;
 }
 
-nav ul li a {
-  color: #000000;
+.sidebar a {
+  display: flex;
+  align-items: center;
+  color: #040404; /* Texte en blanc */
   text-decoration: none;
-  font-size: 1.1rem;
-  transition: color 0.3s ease;
+  font-size: 16px;
 }
 
-nav ul li a:hover {
-  color: #555555;
+.sidebar a svg {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
 }
