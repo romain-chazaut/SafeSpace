@@ -101,23 +101,26 @@ export class BackupService {
     }
   }
 
+  // Méthode pour sauvegarder les infos du dump dans les tables `backup` et `backup_history`
   async saveBackupInfo(backupPath: string, dbConfig: DatabaseConfig): Promise<number> {
-    console.log('Saving backup info for:', dbConfig.database, 'Path:', backupPath);
-    const relativePath = this.getRelativePath(backupPath);
     const query = 'INSERT INTO backup (path, timestamp, action, name_database) VALUES ($1, $2, $3, $4) RETURNING id';
-    const values = [relativePath, new Date(), 'save', dbConfig.database];
-  
+    const values = [backupPath, new Date(), 'save', dbConfig.database];
+
     const result = await this.pool.query(query, values);
     const backupId = result.rows[0].id;
-  
-    console.log('Backup info saved. ID:', backupId);
+
+    // Insérer dans la table backup_history
+    const queryHistory = 'INSERT INTO backup_history (backup_id, path, timestamp, action, database_name, target_database) VALUES ($1, $2, $3, $4, $5, $6)';
+    const valuesHistory = [backupId, backupPath, new Date(), 'save', dbConfig.database, ''];
+    await this.pool.query(queryHistory, valuesHistory);
+
     return backupId;
   }
 
+  // Méthode pour récupérer l'historique des backups
   async getBackupHistory(): Promise<any[]> {
     const query = 'SELECT * FROM backup_history ORDER BY timestamp DESC';
     const result = await this.pool.query(query);
-    console.log(`Retrieved ${result.rows.length} backup history records`);
     return result.rows;
   }
 
