@@ -40,7 +40,13 @@ export class CronController {
   // Arrêter une tâche cron
   async stopCron(request: FastifyRequest<{ Params: { jobName: string } }>, reply: FastifyReply) {
     const { jobName } = request.params;
-
+  
+    // Vérification si le nom de la tâche cron est vide ou invalide
+    if (!jobName || jobName.trim() === '') {
+      reply.status(400).send({ success: false, message: 'Nom de la tâche cron invalide.' });
+      return;
+    }
+  
     const result = this.cronService.stopCronJob(jobName);
     if (result) {
       reply.send({ success: true, message: `Tâche cron "${jobName}" supprimée avec succès.` });
