@@ -1,0 +1,48 @@
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .centered-content {
+    max-width: 800px;
+    width: 100%;
+  }
+  
+  .restore {
+    background-color: #ffcdd2; /* Rouge clair */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .restore h1 {
+    color: #c62828; /* Rouge foncé pour le titre */
+    margin-bottom: 20px;
+  }
+  
+  .restore p {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .restore button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .restore button:hover {
+    background-color: #d32f2f;
+  }
+  
+  .restore button:active {
+    background-color: #b71c1c;
+  }

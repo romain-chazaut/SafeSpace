@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getConnections } from '../services/apiService';
+import '../assets/css/Connections.css';
 
 const Connections = () => {
   const [connections, setConnections] = useState([]);
@@ -10,7 +11,7 @@ const Connections = () => {
     const fetchConnections = async () => {
       try {
         const result = await getConnections();
-        setConnections(result);  // Stocker les connexions récupérées
+        setConnections(result);
       } catch (err) {
         setError('Erreur lors de la récupération des connexions');
       } finally {
@@ -19,19 +20,24 @@ const Connections = () => {
     };
 
     fetchConnections();
-  }, []);  // Appel API à chaque chargement de la page
-
-  if (loading) return <div>Chargement...</div>;
-  if (error) return <div>{error}</div>;
+  }, []);
 
   return (
-    <div>
-      <h1>Liste des connexions</h1>
-      <ul>
-        {connections.map((connection) => (
-          <li key={connection.id}>{connection.host}:{connection.port} - {connection.database}</li>
-        ))}
-      </ul>
+    <div className="main-content">
+      <div className="centered-content connections">
+        <h1>Liste des connexions</h1>
+        {loading && <div className="loading">Chargement...</div>}
+        {error && <div className="error">{error}</div>}
+        {!loading && !error && (
+          <ul>
+            {connections.map((connection) => (
+              <li key={connection.id}>
+                {connection.host}:{connection.port} - {connection.database}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
