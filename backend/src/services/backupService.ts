@@ -11,7 +11,10 @@ export class BackupService {
   private dockerContainerName: string;
 
   constructor() {
-    this.backupDir = path.join(__dirname, '..', '..', 'backup');
+    this.backupDir = path.join('..', '', 'backup');
+    this.backupDir = '../backend/backup';
+
+    console.log('Backup directory:', this.backupDir);
     this.pool = new Pool({
       host: 'localhost',
       port: 5432,
@@ -51,8 +54,15 @@ export class BackupService {
 
   private getRelativePath(absolutePath: string): string {
     const projectRoot = path.resolve(__dirname, '..', '..');
-    return path.relative(projectRoot, absolutePath);
+    console.log('Project root:', projectRoot);
+    console.log('Absolute path:', absolutePath);
+  
+    const relativePath = path.relative(projectRoot, absolutePath);
+    console.log('Relative path:', relativePath);
+  
+    return relativePath;
   }
+  
 
   private getAbsolutePath(relativePath: string): string {
     return path.resolve(__dirname, '..', '..', relativePath);
@@ -73,49 +83,50 @@ export class BackupService {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const dumpFileName = `dump_${dbConfig.database}_${timestamp}.sql`;
     const containerDumpPath = `/tmp/${dumpFileName}`;
-    const hostDumpPath = path.join(this.backupDir, dumpFileName);
-
+    const relativeDumpPath = path.join(this.backupDir, dumpFileName);
+  
     await fs.mkdir(this.backupDir, { recursive: true });
     
-    // Utiliser le format texte (-Fp) au lieu du format personnalisé (-Fc)
     const dumpCommand = `docker exec -e PGPASSWORD=${this.pool.options.password} ${this.dockerContainerName} pg_dump -h db -p 5432 -U ${this.pool.options.user} -d ${dbConfig.database} -Fp -f ${containerDumpPath}`;
-    
+  
     try {
       console.log('Executing dump command:', dumpCommand);
       const output = await this.execCommand(dumpCommand);
       console.log('Dump command output:', output);
-
+  
       console.log('Copying dump file from container to host...');
-      await this.execCommand(`docker cp ${this.dockerContainerName}:${containerDumpPath} ${hostDumpPath}`);
-
+      await this.execCommand(`docker cp ${this.dockerContainerName}:${containerDumpPath} ${relativeDumpPath}`);
+  
       console.log('Cleaning up temporary file in container...');
       await this.execCommand(`docker exec ${this.dockerContainerName} rm ${containerDumpPath}`);
-
-      const fileContent = await fs.readFile(hostDumpPath, 'utf8');
-      console.log('Dump preview:', fileContent.substring(0, 500));
-
-      return hostDumpPath;
+  
+      console.log('Relative path for dump:', relativeDumpPath);
+  
+      return relativeDumpPath;
     } catch (error) {
       console.error('Error during dump creation:', error);
       throw error;
     }
   }
+  
+  
 
   // Méthode pour sauvegarder les infos du dump dans les tables `backup` et `backup_history`
   async saveBackupInfo(backupPath: string, dbConfig: DatabaseConfig): Promise<number> {
     const query = 'INSERT INTO backup (path, timestamp, action, name_database) VALUES ($1, $2, $3, $4) RETURNING id';
     const values = [backupPath, new Date(), 'save', dbConfig.database];
-
+  
     const result = await this.pool.query(query, values);
     const backupId = result.rows[0].id;
-
+  
     // Insérer dans la table backup_history
     const queryHistory = 'INSERT INTO backup_history (backup_id, path, timestamp, action, database_name, target_database) VALUES ($1, $2, $3, $4, $5, $6)';
     const valuesHistory = [backupId, backupPath, new Date(), 'save', dbConfig.database, ''];
     await this.pool.query(queryHistory, valuesHistory);
-
+  
     return backupId;
   }
+  
 
   // Méthode pour récupérer l'historique des backups
   async getBackupHistory(): Promise<any[]> {

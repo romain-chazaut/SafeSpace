@@ -9,6 +9,7 @@ import backupRoutesSave from './routes/dumpbackservice.routes';
 import cronRoutes from './routes/cron.routes'; // Importer les routes cron
 import { BackupService } from './services/backupService'; // Importer le service de sauvegarde
 import { CronService } from './services/CronService'; // Importer le service des tâches cron
+import connexionAll from './routes/connectionList.routes';
 
 const fastify: FastifyInstance = Fastify({
   logger: true
@@ -29,12 +30,17 @@ fastify.register(cors, {
 fastify.register(connectionRoutes);
 fastify.register(backupRoutes);
 fastify.register(connexion);
+
 fastify.register(backupRoutesSave);
-fastify.register(cronRoutes); // Enregistrement des routes cron
+fastify.register(cronRoutes);
+fastify.register(connexionAll); // Enregistrement des routes cron
+ // Enregistrement des routes cron
 
 // Instancier le service de sauvegarde et de gestion des crons
 const backupService = new BackupService();
 const cronService = new CronService();
+
+
 
 // Démarrage du serveur Fastify
 const start = async () => {

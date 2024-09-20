@@ -1,4 +1,4 @@
-import '../assets/css/Histoirque.css';
+import '../assets/css/Historique.css';
 import React, { useEffect, useState } from 'react';
 
 const History = () => {
@@ -6,7 +6,6 @@ const History = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Fonction pour récupérer l'historique des sauvegardes
   const fetchBackupHistory = async () => {
     try {
       const response = await fetch('http://localhost:3000/backup/history');
@@ -14,7 +13,7 @@ const History = () => {
         throw new Error('Erreur lors de la récupération de l\'historique des sauvegardes');
       }
       const data = await response.json();
-      setBackups(data.history); // Assumes the response has a "history" field containing an array of backup objects
+      setBackups(data.history);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -22,32 +21,46 @@ const History = () => {
     }
   };
 
-  // Utilisation de useEffect pour lancer l'appel API au chargement du composant
   useEffect(() => {
     fetchBackupHistory();
   }, []);
 
   return (
-    <div className="main-content">
-      <div className="centered-content history">
-        <h1>Historique des sauvegardes</h1>
-        <p>Ici, vous pouvez consulter l'historique de toutes les sauvegardes effectuées.</p>
+    <div className="history-container">
+      <h1 className="history-title">Historique des sauvegardes</h1>
+      <p className="history-description">Consultez l'historique détaillé de toutes les sauvegardes effectuées.</p>
 
-        {loading && <p>Chargement de l'historique...</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+      {loading && <p className="history-loading">Chargement de l'historique...</p>}
+      {error && <p className="history-error">{error}</p>}
 
-        {!loading && !error && backups.length > 0 ? (
-          <ul>
-            {backups.map((backup, index) => (
-              <li key={index}>
-                Sauvegarde {backup.id} - {new Date(backup.timestamp).toLocaleDateString()} - {backup.database_name}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          !loading && <p>Aucune sauvegarde disponible pour le moment.</p>
-        )}
-      </div>
+      {!loading && !error && backups.length > 0 ? (
+        <div className="table-container">
+          <table className="history-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Base de données</th>
+                <th>Chemin</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {backups.map((backup) => (
+                <tr key={backup.id}>
+                  <td>{backup.id}</td>
+                  <td>{new Date(backup.timestamp).toLocaleString()}</td>
+                  <td>{backup.database_name}</td>
+                  <td>{backup.path}</td>
+                  <td>{backup.action}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        !loading && <p className="history-no-data">Aucune sauvegarde disponible pour le moment.</p>
+      )}
     </div>
   );
 };

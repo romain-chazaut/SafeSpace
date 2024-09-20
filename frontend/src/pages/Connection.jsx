@@ -1,5 +1,6 @@
+// src/components/Connections.js
 import React, { useEffect, useState } from 'react';
-import { getConnections } from '../services/apiService';
+import { getConnectionAll, getConnections } from '../services/apiService';
 import '../assets/css/Connections.css';
 
 const Connections = () => {
@@ -10,7 +11,8 @@ const Connections = () => {
   useEffect(() => {
     const fetchConnections = async () => {
       try {
-        const result = await getConnections();
+        const result = await getConnectionAll();
+        console.log(result);
         setConnections(result);
       } catch (err) {
         setError('Erreur lors de la récupération des connexions');
@@ -31,8 +33,8 @@ const Connections = () => {
         {!loading && !error && (
           <ul>
             {connections.map((connection) => (
-              <li key={connection.id}>
-                {connection.host}:{connection.port} - {connection.database}
+              <li key={connection.pid}>
+                {connection.user} - {connection.database} ({connection.client_addr}:{connection.client_port})
               </li>
             ))}
           </ul>
