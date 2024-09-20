@@ -13,8 +13,12 @@ export class CronController {
 
   // Lister toutes les tâches cron
   async listCrons(_request: FastifyRequest, reply: FastifyReply) {
-    const jobs = this.cronService.listCronJobs();
-    reply.send({ success: true, jobs });
+    try {
+      const jobs = this.cronService.listCronJobs();
+      reply.send({ success: true, jobs });
+    } catch (error) {
+      reply.status(500).send({ success: false, message: 'Erreur lors de la récupération des tâches cron.' });
+    }
   }
 
   async startCron(request: FastifyRequest<{ Body: { jobName: string, schedule: string, database: string } }>, reply: FastifyReply) {
@@ -22,7 +26,7 @@ export class CronController {
     
     try {
       if (!jobName || !schedule || !database) {
-        throw new Error("Tous les champs 'jobName', 'schedule', et 'database' sont requis.");
+        return reply.status(400).send({ success: false, message: "Tous les champs 'jobName', 'schedule', et 'database' sont requis." });
       }
   
       this.cronService.startCronJob(jobName, schedule, { database }, this.backupService);
@@ -32,7 +36,7 @@ export class CronController {
         console.error("Erreur lors de l'ajout de la tâche cron :", error);
         reply.status(400).send({ success: false, message: error.message });
       } else {
-        reply.status(400).send({ success: false, message: 'Une erreur inconnue est survenue.' });
+        reply.status(500).send({ success: false, message: 'Une erreur inconnue est survenue.' });
       }
     }
   }
