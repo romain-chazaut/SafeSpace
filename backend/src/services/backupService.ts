@@ -4,11 +4,13 @@ import path from 'path';
 import { Pool } from 'pg';
 import { DatabaseConfig } from '../services/types';
 import cron from 'node-cron'; // Import de node-cron
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 export class BackupService {
   private backupDir: string;
   private pool: Pool;
   private dockerContainerName: string;
+  backupService: any;
 
   constructor() {
     this.backupDir = path.join('..', '', 'backup');
@@ -135,19 +137,19 @@ export class BackupService {
     return result.rows;
   }
 
-  async restoreDatabase(sourceDatabaseId: string, targetDatabaseName: string): Promise<void> {
+  async restoreDatabase(sourceBackupId: number, targetDatabaseName: string): Promise<void> {
     try {
-      console.log(`Attempting to restore database. Source: ${sourceDatabaseId}, Target: ${targetDatabaseName}`);
-      const query = 'SELECT path FROM backup WHERE name_database = $1 ORDER BY timestamp DESC LIMIT 1';
-      const result = await this.pool.query(query, [sourceDatabaseId]);
+      console.log(`Attempting to restore database. Source Backup ID: ${sourceBackupId}, Target: ${targetDatabaseName}`);
+      const query = 'SELECT path, name_database FROM backup WHERE id = $1';
+      const result = await this.pool.query<{ path: string; name_database: string }>(query, [sourceBackupId]);
 
       if (result.rows.length === 0) {
-        throw new Error(`Aucun backup trouvé pour la base de données ${sourceDatabaseId}`);
+        throw new Error(`Aucun backup trouvé avec l'ID ${sourceBackupId}`);
       }
 
-      const relativePath = result.rows[0].path;
+      const { path: relativePath, name_database: sourceDatabaseName } = result.rows[0];
       const backupPath = this.getAbsolutePath(relativePath);
-      console.log(`Found backup path: ${backupPath}`);
+      console.log(`Found backup path: ${backupPath} for database: ${sourceDatabaseName}`);
 
       // Vérifiez si le fichier existe
       try {
@@ -171,12 +173,13 @@ export class BackupService {
 
       console.log(`Base de données restaurée avec succès dans ${targetDatabaseName}`);
 
-      await this.saveRestoreInfo(relativePath, sourceDatabaseId, targetDatabaseName);
+      await this.saveRestoreInfo(sourceBackupId, relativePath, sourceDatabaseName, targetDatabaseName);
     } catch (error) {
       console.error('Erreur lors de la restauration de la base de données:', error);
       throw error;
     }
   }
+
 
   private async createDatabaseIfNotExists(databaseName: string): Promise<void> {
     try {
@@ -197,28 +200,32 @@ export class BackupService {
     }
   }
 
-  private async saveRestoreInfo(backupPath: string, sourceDatabaseId: string, targetDatabaseName: string): Promise<void> {
-    console.log(`Saving restore info. Source: ${sourceDatabaseId}, Target: ${targetDatabaseName}, Path: ${backupPath}`);
-    const query = 'INSERT INTO backup_history (path, timestamp, action, database_name, target_database) VALUES ($1, $2, $3, $4, $5)';
-    const values = [backupPath, new Date(), 'restore', sourceDatabaseId, targetDatabaseName];
-    await this.pool.query(query, values);
-    console.log('Restore info saved successfully');
+  private async saveRestoreInfo(backupId: number, backupPath: string, sourceDatabaseName: string, targetDatabaseName: string): Promise<void> {
+    console.log(`Enregistrement des informations de restauration. ID de sauvegarde : ${backupId}, Source : ${sourceDatabaseName}, Cible : ${targetDatabaseName}`);
+    const query = 'INSERT INTO backup_history (backup_id, path, timestamp, action, database_name, target_database) VALUES ($1, $2, $3, $4, $5, $6)';
+    const values = [backupId, backupPath, new Date(), 'restore', sourceDatabaseName || 'Unknown', targetDatabaseName];
+    try {
+      await this.pool.query(query, values);
+      console.log('Informations de restauration enregistrées avec succès');
+    } catch (error) {
+      console.error('Erreur lors de lenregistrement des informations de restauration ', error);
+      throw error;
+    }
   }
-
-  async listBackups(databaseName?: string): Promise<any[]> {
+  async listBackups(databaseId?: string): Promise<any[]> {
     let query = 'SELECT * FROM backup';
     let params = [];
-
-    if (databaseName) {
-      query += ' WHERE name_database = $1';
-      params.push(databaseName);
+  
+    if (databaseId) {
+      query += ' WHERE id = $1';
+      params.push(databaseId);
     }
-
+  
     query += ' ORDER BY timestamp DESC';
-
+  
     console.log('Executing query:', query, 'with params:', params);
     const result = await this.pool.query(query, params);
-    console.log(`Retrieved ${result.rows.length} backups${databaseName ? ` for database ${databaseName}` : ''}`);
+    console.log(`Retrieved ${result.rows.length} backups${databaseId ? ` for backup ID ${databaseId}` : ''}`);
     console.log('Query result:', result.rows);
     return result.rows;
   }

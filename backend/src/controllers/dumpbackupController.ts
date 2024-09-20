@@ -39,27 +39,41 @@ export class BackupController {
     }
   }
 
-  async restoreDatabase(request: FastifyRequest<{ Body: { sourceDatabaseId: string; targetDatabaseName: string } }>, reply: FastifyReply) {
+  async restoreDatabase(
+    request: FastifyRequest<{
+      Params: { sourceBackupId: string };
+      Body: { targetDatabaseName: string };
+    }>,
+    reply: FastifyReply
+  ): Promise<FastifyReply> {
     try {
-      const { sourceDatabaseId, targetDatabaseName } = request.body;
-      console.log(`Attempting to restore database. Source: ${sourceDatabaseId}, Target: ${targetDatabaseName}`);
+      const sourceBackupId = parseInt(request.params.sourceBackupId, 10);
+      const { targetDatabaseName } = request.body;
 
-      // Vérifier si des sauvegardes existent pour la base de données source
-      const backups = await this.backupService.listBackups(sourceDatabaseId);
-      if (backups.length === 0) {
-        return reply.code(404).send({ success: false, message: `No backups found for database ${sourceDatabaseId}` });
-      }
+      console.log(`Attempting to restore database. Source Backup ID: ${sourceBackupId}, Target: ${targetDatabaseName}`);
 
-      await this.backupService.restoreDatabase(sourceDatabaseId, targetDatabaseName);
-      return reply.code(200).send({ success: true, message: 'Database restored successfully' });
+      await this.backupService.restoreDatabase(sourceBackupId, targetDatabaseName);
+      
+      return reply.code(200).send({ 
+        success: true, 
+        message: 'Database restored successfully' 
+      });
     } catch (error) {
       console.error('Error in restoreDatabase:', error);
       if (error instanceof Error && error.message.includes('Aucun backup trouvé')) {
-        return reply.code(404).send({ success: false, message: error.message });
+        return reply.code(404).send({ 
+          success: false, 
+          message: error.message 
+        });
       }
-      return reply.code(500).send({ success: false, message: 'Database restoration failed', error: error instanceof Error ? error.message : 'Unknown error' });
+      return reply.code(500).send({ 
+        success: false, 
+        message: 'Database restoration failed', 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
     }
   }
+
 
   async listBackups(request: FastifyRequest<{ Querystring: { databaseName?: string } }>, reply: FastifyReply) {
     try {
