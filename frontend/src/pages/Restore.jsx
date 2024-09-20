@@ -15,13 +15,15 @@ const RestoreComponent = () => {
     setMessage({ type: '', content: '' });
 
     try {
-      const response = await axios.post('http://localhost:3000/backups/restore', {
-        sourceDatabaseId,
+      const response = await axios.post(`http://localhost:3000/backups/restore/${sourceDatabaseId}`, {
         targetDatabaseName
       });
       setMessage({ type: 'success', content: 'Restauration réussie!' });
     } catch (error) {
-      setMessage({ type: 'error', content: 'Erreur lors de la restauration. Veuillez réessayer.' });
+      setMessage({ 
+        type: 'error', 
+        content: error.response?.data?.message || 'Erreur lors de la restauration. Veuillez réessayer.'
+      });
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +69,8 @@ const RestoreComponent = () => {
               />
             </div>
             <button type="submit" className="submit-btn" disabled={isLoading}>
-              {isLoading ? <FaSpinner className="spin" /> : null} {isLoading ? 'Restauration en cours...' : 'Restaurer la sauvegarde'}
+              {isLoading ? <FaSpinner className="spin" /> : null} 
+              {isLoading ? 'Restauration en cours...' : 'Restaurer la sauvegarde'}
             </button>
           </form>
         </div>

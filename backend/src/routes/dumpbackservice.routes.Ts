@@ -29,8 +29,9 @@ export default async function backupRoutesSave(fastify: FastifyInstance) {
   });
 
   fastify.post<{
-    Body: { sourceDatabaseId: string; targetDatabaseName: string }
-  }>('/backups/restore', async (request: FastifyRequest<{ Body: { sourceDatabaseId: string; targetDatabaseName: string; }; }, RawServerDefault, IncomingMessage, FastifySchema, FastifyTypeProviderDefault, unknown, FastifyBaseLogger, ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, { Body: { sourceDatabaseId: string; targetDatabaseName: string; }; }>>, reply: FastifyReply<RawServerDefault, IncomingMessage, ServerResponse<IncomingMessage>, RouteGenericInterface, unknown, FastifySchema, FastifyTypeProviderDefault, unknown>) => {
+    Params: { sourceBackupId: string };
+    Body: { targetDatabaseName: string }
+  }>('/backups/restore/:sourceBackupId', async (request, reply) => {
     return backupController.restoreDatabase(request, reply);
   });
 

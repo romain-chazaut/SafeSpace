@@ -9,10 +9,12 @@ const History = () => {
   const fetchBackupHistory = async () => {
     try {
       const response = await fetch('http://localhost:3000/backup/history');
+      console.log(response)
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération de l\'historique des sauvegardes');
       }
       const data = await response.json();
+      console.log(data);
       setBackups(data.history);
     } catch (error) {
       setError(error.message);
@@ -48,7 +50,7 @@ const History = () => {
             <tbody>
               {backups.map((backup) => (
                 <tr key={backup.id}>
-                  <td>{backup.id}</td>
+                  <td>{backup.backup_id}</td>
                   <td>{new Date(backup.timestamp).toLocaleString()}</td>
                   <td>{backup.database_name}</td>
                   <td>{backup.path}</td>
