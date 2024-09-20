@@ -33,6 +33,8 @@ export default async function backupRoutesSave(fastify: FastifyInstance) {
   }>('/backups/restore', async (request: FastifyRequest<{ Body: { sourceDatabaseId: string; targetDatabaseName: string; }; }, RawServerDefault, IncomingMessage, FastifySchema, FastifyTypeProviderDefault, unknown, FastifyBaseLogger, ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, { Body: { sourceDatabaseId: string; targetDatabaseName: string; }; }>>, reply: FastifyReply<RawServerDefault, IncomingMessage, ServerResponse<IncomingMessage>, RouteGenericInterface, unknown, FastifySchema, FastifyTypeProviderDefault, unknown>) => {
     return backupController.restoreDatabase(request, reply);
   });
+
+  
   fastify.addHook('onClose', async () => {
     backupController.closeService();
   });

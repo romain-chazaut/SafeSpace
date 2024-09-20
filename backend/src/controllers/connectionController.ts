@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { Pool, PoolConfig } from 'pg'
 import { ConnectionRequest } from '../routes/types'
+import connectionService from '../services/connectionServiceList'
 
 
 interface Connection {
@@ -12,12 +13,17 @@ interface Connection {
 }
 
 class ConnectionController {
+  closeConnection(arg0: string, closeConnection: any) {
+      throw new Error('Method not implemented.');
+  }
   private connections: Connection[] = [];
 
   // Renvoie la liste de toutes les connexions
   async getConnections(_request: FastifyRequest, reply: FastifyReply): Promise<void> {
     reply.send(this.connections);  // Renvoie les connexions
   }
+
+  
 
   async createConnection(request: FastifyRequest<{ Body: ConnectionRequest }>, reply: FastifyReply): Promise<void> {
     const { host, port, database, user, password } = request.body;

@@ -1,48 +1,107 @@
-.main-content {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.restore-manager {
+  margin-left: 200px; /* Largeur de la nav */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+  /* background-color: #f5f7fa; */
+}
+
+.restore-content {
+  max-width: 600px;
+  width: 100%;
+}
+h1 {
+  color: #333;
+  text-align: center;
+  font-size: 24px; /* Ajustez cette valeur selon vos besoins */
+  margin-bottom: 10px; /* Espace sous le titre */
+}
+
+h2 {
+  color: #333;
+  text-align: center;
+  font-size: 20px; /* Ajustez cette valeur selon vos besoins */
+  margin-bottom: 10px; /* Espace sous le sous-titre */
+}
+
+.message {
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.message.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.restore-form {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.submit-btn {
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background-color: #357abd;
+}
+
+.submit-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1000px) {
+  .restore-manager {
+      margin-left: 0;
+      padding: 10px;
   }
   
-  .centered-content {
-    max-width: 800px;
-    width: 100%;
+  .restore-content {
+      padding: 15px;
   }
-  
-  .restore {
-    background-color: #ffcdd2; /* Rouge clair */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .restore h1 {
-    color: #c62828; /* Rouge foncé pour le titre */
-    margin-bottom: 20px;
-  }
-  
-  .restore p {
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .restore button {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-  }
-  
-  .restore button:hover {
-    background-color: #d32f2f;
-  }
-  
-  .restore button:active {
-    background-color: #b71c1c;
-  }
+}

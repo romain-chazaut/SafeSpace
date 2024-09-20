@@ -8,3 +8,4 @@ export default async function connexion(fastify: FastifyInstance): Promise<void>
   fastify.post<{ Body: ConnectionRequest }>('/connections', connectionController.createConnection.bind(connectionController))
   
 }
+

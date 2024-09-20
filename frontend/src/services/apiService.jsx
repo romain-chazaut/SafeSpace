@@ -34,3 +34,9 @@ export const launchBackup = async (databaseName) => {
   }
   return await response.json();
 };
+
+export const getConnectionAll = async () => {
+  const response = await axios.get(`${API_URL}/connectionsAll`);
+  console.log(response.data.connections);
+  return response.data.connections;
+};

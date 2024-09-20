@@ -1,54 +1,98 @@
-.main-content {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-  }
-  
-  .centered-content {
-    max-width: 800px;
-    width: 100%;
-  }
-  
-  .backup {
-    background-color: #c8e6c9; /* Vert clair */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .backup h1 {
-    color: #2e7d32; /* Vert foncé pour le titre */
-    margin-bottom: 20px;
-  }
-  
-  .backup p {
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .backup button {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-  }
-  
-  .backup button:hover {
-    background-color: #45a049;
-  }
-  
-  .backup button:disabled {
-    background-color: #a5d6a7;
-    cursor: not-allowed;
-  }
-  
-  .backup .error {
-    color: #d32f2f;
-    margin-top: 10px;
-  }
+/* .main-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #e9ecef;
+}
+
+.centered-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+} */
+
+.backup h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backup h1 svg {
+  margin-right: 0.5rem;
+}
+
+.intro-text {
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  color: #495057;
+}
+
+.backup form {
+  display: flex;
+  flex-direction: column;
+}
+
+.backup label {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.backup label svg {
+  margin-right: 0.5rem;
+}
+
+.backup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.backup button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backup button:hover {
+  background-color: #0056b3;
+}
+
+.backup button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.backup button .spin {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error {
+  color: #dc3545;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.error svg {
+  margin-right: 0.5rem;
+}

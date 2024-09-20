@@ -1,21 +1,79 @@
-import React from 'react';
-import '../assets/css/Restore.css';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { FaDatabase, FaArrowAltCircleUp, FaSpinner, FaExclamationCircle } from 'react-icons/fa';
+import "../assets/css/Restore.css";
 
-const Restore = () => {
-  const handleRestore = () => {
-    alert('Restauration effectuée !');
-    // Ici, vous pouvez ajouter la logique réelle de restauration
+const RestoreComponent = () => {
+  const [sourceDatabaseId, setSourceDatabaseId] = useState('');
+  const [targetDatabaseName, setTargetDatabaseName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState({ type: '', content: '' });
+
+  const handleRestore = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage({ type: '', content: '' });
+
+    try {
+      const response = await axios.post('http://localhost:3000/backups/restore', {
+        sourceDatabaseId,
+        targetDatabaseName
+      });
+      setMessage({ type: 'success', content: 'Restauration réussie!' });
+    } catch (error) {
+      setMessage({ type: 'error', content: 'Erreur lors de la restauration. Veuillez réessayer.' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="main-content">
-      <div className="centered-content restore">
-        <h1>Restauration</h1>
-        <p>Restaurer une base de données à partir d'une sauvegarde.</p>
-        <button onClick={handleRestore}>Restaurer la sauvegarde</button>
+    <div className="restore-manager">
+      <div className="restore-content">
+        <h1><FaArrowAltCircleUp /> Restauration de Base de Données</h1>
+        <p className="feature-description">
+          Restaurez rapidement vos bases de données à partir de sauvegardes précédentes. 
+          Cette fonctionnalité vous permet de récupérer vos données en cas de perte ou 
+          de corruption, garantissant ainsi la continuité de votre activité.
+        </p>
+        
+        {message.content && (
+          <p className={`message ${message.type}`}>
+            {message.type === 'error' ? <FaExclamationCircle /> : null} {message.content}
+          </p>
+        )}
+        
+        <div className="restore-form">
+          <h3><FaDatabase /> Restaurer une sauvegarde</h3>
+          <form onSubmit={handleRestore}>
+            <div className="form-group">
+              <label htmlFor="sourceDatabaseId">ID de la sauvegarde source:</label>
+              <input
+                type="text"
+                id="sourceDatabaseId"
+                value={sourceDatabaseId}
+                onChange={(e) => setSourceDatabaseId(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="targetDatabaseName">Nom de la base de données cible:</label>
+              <input
+                type="text"
+                id="targetDatabaseName"
+                value={targetDatabaseName}
+                onChange={(e) => setTargetDatabaseName(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className="submit-btn" disabled={isLoading}>
+              {isLoading ? <FaSpinner className="spin" /> : null} {isLoading ? 'Restauration en cours...' : 'Restaurer la sauvegarde'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Restore;
+export default RestoreComponent;
