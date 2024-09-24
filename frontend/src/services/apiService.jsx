@@ -24,7 +24,7 @@ export const createConnection = async (connectionData) => {
 
 // Lancer une sauvegarde
 export const launchBackup = async (databaseName) => {
-  const response = await fetch(`${API_URL}/backup/create`, {
+  const response = await fetch(`${API_URL}/backup/create-new`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ database: databaseName }),

@@ -1,7 +1,7 @@
 # Utiliser une image Node.js compatible
 FROM node:22.7.0
 
-# Créer et définir le répertoire de travail
+# Définir le répertoire de travail
 WORKDIR /app
 
 # Copier les fichiers package.json et package-lock.json
@@ -13,11 +13,11 @@ RUN npm install
 # Copier le reste du code dans le conteneur
 COPY . .
 
-# Compiler le TypeScript
+# Construire l'application
 RUN npm run build
 
-# Exposer le port utilisé par Fastify
-EXPOSE 3000
+# Exposer le port utilisé par Vite (par défaut 5173 ou celui que tu utilises)
+EXPOSE 5173
 
-# Démarrer l'application en utilisant le JavaScript compilé
-CMD ["node", "dist/server.js"]
+# Démarrer l'application en mode preview
+CMD ["npm", "run", "preview"]

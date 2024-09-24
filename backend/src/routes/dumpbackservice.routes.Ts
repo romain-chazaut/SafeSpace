@@ -4,12 +4,11 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { BackupController } from '../controllers/dumpbackupController';
 import { DatabaseConfig } from '../services/types';
 
-
 export default async function backupRoutesSave(fastify: FastifyInstance) {
   const backupController = new BackupController();
 
-  // Route pour créer un backup
-  fastify.post<{ Body: DatabaseConfig }>('/backup/create', {
+  // Route pour créer un backup (renommée pour éviter la duplication avec `backup.routes.ts`)
+  fastify.post<{ Body: DatabaseConfig }>('/backup/create-new', {
     schema: {
       body: {
         type: 'object',
@@ -28,14 +27,14 @@ export default async function backupRoutesSave(fastify: FastifyInstance) {
     await backupController.getBackupHistory(request, reply);
   });
 
-  fastify.post<{
-    Params: { sourceBackupId: string };
-    Body: { targetDatabaseName: string }
-  }>('/backups/restore/:sourceBackupId', async (request, reply) => {
-    return backupController.restoreDatabase(request, reply);
-  });
+  // Route pour restaurer un backup
+  fastify.post<{ Params: { sourceBackupId: string }; Body: { targetDatabaseName: string } }>(
+    '/backups/restore/:sourceBackupId',
+    async (request: FastifyRequest<{ Params: { sourceBackupId: string; }; Body: { targetDatabaseName: string; }; }, RawServerDefault, IncomingMessage, FastifySchema, FastifyTypeProviderDefault, unknown, FastifyBaseLogger, ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, { Params: { sourceBackupId: string; }; Body: { targetDatabaseName: string; }; }>>, reply: FastifyReply<RawServerDefault, IncomingMessage, ServerResponse<IncomingMessage>, RouteGenericInterface, unknown, FastifySchema, FastifyTypeProviderDefault, unknown>) => {
+      return backupController.restoreDatabase(request, reply);
+    }
+  );
 
-  
   fastify.addHook('onClose', async () => {
     backupController.closeService();
   });

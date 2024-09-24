@@ -1,3 +1,4 @@
+version: '3'
 services:
   db:
     image: postgres:latest
@@ -5,13 +6,15 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: SafeBase
+      CSRF_PROTECTION: "False"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     container_name: pgadmin_container
     restart: always
     environment:
@@ -23,26 +26,36 @@ services:
       - db
 
   backend:
-    build: 
+    build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: backend_container
     restart: always
+    environment:
+      DB_HOST: db                  
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: mysecretpassword
+      DB_NAME: SafeBase
     ports:
-      - "3001:3000"  # Cela exposera le port 3000 du conteneur sur le port 3001 de l'hôte
+      - "3000:3000"
     depends_on:
       - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=mysecretpassword
-      - DB_NAME=postgres
     volumes:
-      - backend_code:/backend
-      - backend_backups:/backend/backups
+      - backend_code:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_container
+    restart: always
+    ports:
+      - "5173:5173"
+    volumes:
+      - backend_backups:/app
 
 volumes:
   postgres_data:
   backend_code:
   backend_backups:
-  
