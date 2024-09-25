@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaDatabase, FaSpinner, FaExclamationCircle, FaLock } from 'react-icons/fa';
+import { FaDatabase, FaSpinner, FaExclamationCircle, FaLock, FaCheckCircle } from 'react-icons/fa';
 import '../assets/css/Backup.css';
 
 const Backup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [databaseName, setDatabaseName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const Backup = () => {
 
     setLoading(true);
     setError('');
+    setSuccess('');
     try {
       const response = await fetch('http://localhost:3000/backup', {
         method: 'POST',
@@ -36,7 +38,10 @@ const Backup = () => {
       });
 
       if (response.ok) {
-        navigate('/history');
+        setSuccess('Sauvegarde réussie ! Redirection vers l\'historique...');
+        setTimeout(() => {
+          navigate('/history');
+        }, 3000);
       } else {
         const data = await response.json();
         setError(data.message || 'Erreur lors du lancement de la sauvegarde.');
@@ -50,61 +55,62 @@ const Backup = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="main-content">
-        <div className="centered-content backup">
-          <h1>
-            <FaLock /> Accès Restreint
-          </h1>
-          <p className="intro-text">
-            Veuillez vous connecter pour accéder à la fonctionnalité de sauvegarde de base de données.
-          </p>
-        </div>
+      <div className="backup-container">
+        <h1 className="backup-title">
+          <FaLock /> Accès Restreint
+        </h1>
+        <p className="backup-description">
+          Veuillez vous connecter pour accéder à la fonctionnalité de sauvegarde de base de données.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="main-content">
-      <div className="centered-content backup">
-        <h1>
-          <FaDatabase /> Backup
-        </h1>
-        <p className="intro-text">
-          Gérez et planifiez vos sauvegardes de bases de données en toute simplicité.
-          Assurez-vous que vos données sont protégées contre les pertes accidentelles,
-          les pannes matérielles ou les erreurs humaines. Un bon plan de sauvegarde
-          est essentiel pour la continuité de votre activité.
-        </p>
+    <div className="backup-container">
+      <h1 className="backup-title">
+        <FaDatabase /> Backup
+      </h1>
+      <p className="backup-description">
+        Gérez et planifiez vos sauvegardes de bases de données en toute simplicité.
+        Assurez-vous que vos données sont protégées contre les pertes accidentelles,
+        les pannes matérielles ou les erreurs humaines. Un bon plan de sauvegarde
+        est essentiel pour la continuité de votre activité.
+      </p>
+      
+      <form onSubmit={handleBackup} className="backup-form">
+        <label htmlFor="database-name">
+          <FaDatabase /> Nom de la base de données :
+        </label>
+        <input
+          type="text"
+          id="database-name"
+          value={databaseName}
+          onChange={(e) => setDatabaseName(e.target.value)}
+          required
+        />
         
-        <form onSubmit={handleBackup}>
-          <label htmlFor="database-name">
-            <FaDatabase /> Nom de la base de données :
-          </label>
-          <input
-            type="text"
-            id="database-name"
-            value={databaseName}
-            onChange={(e) => setDatabaseName(e.target.value)}
-            required
-          />
-          
-          <button type="submit" disabled={loading}>
-            {loading ? (
-              <>
-                <FaSpinner className="spin" /> Sauvegarde en cours...
-              </>
-            ) : (
-              'Lancer une sauvegarde'
-            )}
-          </button>
-        </form>
-        
-        {error && (
-          <p className="error">
-            <FaExclamationCircle /> {error}
-          </p>
-        )}
-      </div>
+        <button type="submit" className="backup-button" disabled={loading}>
+          {loading ? (
+            <>
+              <FaSpinner className="spin" /> Sauvegarde en cours...
+            </>
+          ) : (
+            'Lancer une sauvegarde'
+          )}
+        </button>
+      </form>
+      
+      {error && (
+        <div className="backup-error">
+          <FaExclamationCircle /> {error}
+        </div>
+      )}
+      {success && (
+        <div className="backup-success">
+          <FaCheckCircle /> {success}
+        </div>
+      )}
     </div>
   );
 };

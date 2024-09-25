@@ -121,12 +121,21 @@ export class BackupService {
     console.log('Backup info saved in backup_history table');
   }
 
-  async getBackupHistory(): Promise<any[]> {
-    const query = 'SELECT * FROM backup_history ORDER BY timestamp DESC';
-    const result = await this.databaseService.getPool().query(query);
-    return result.rows;
+  async getBackupHistory(page: number = 1, limit: number = 10): Promise<{ rows: any[], totalCount: number }> {
+    const offset = (page - 1) * limit;
+    const query = 'SELECT * FROM backup_history ORDER BY timestamp DESC LIMIT $1 OFFSET $2';
+    const countQuery = 'SELECT COUNT(*) FROM backup_history';
+    
+    const [result, countResult] = await Promise.all([
+      this.databaseService.getPool().query(query, [limit, offset]),
+      this.databaseService.getPool().query(countQuery)
+    ]);
+  
+    return {
+      rows: result.rows,
+      totalCount: parseInt(countResult.rows[0].count)
+    };
   }
-
   async restoreDatabase(sourceBackupId: number, targetDatabaseName: string): Promise<void> {
     try {
       console.log(`Attempting to restore database. Source Backup ID: ${sourceBackupId}, Target: ${targetDatabaseName}`);

@@ -1,122 +1,131 @@
 .main-content {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px;
-  background-color: #f0f4f8;
+  flex: 1;
+  padding: 50px;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+  height: 100vh;
 }
 
 .centered-content {
-  max-width: 600px;
   width: 100%;
-}
-
-.new-connection {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .new-connection h1 {
-  color: #2c3e50;
-  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+  border-bottom: 3px solid #9C27B0; /* Blue color for database theme */
+  padding-bottom: 5px;
   display: flex;
   align-items: center;
-  font-size: 24px;
 }
 
 .new-connection h1 svg {
   margin-right: 10px;
-  color: #3498db;
 }
 
 .description {
-  color: #7f8c8d;
-  margin-bottom: 20px;
+  color: #666;
   font-size: 14px;
-  line-height: 1.6;
-  display: flex;
-  align-items: center;
-}
-
-.description svg {
-  margin-right: 10px;
-  color: #3498db;
+  margin-bottom: 20px;
 }
 
 .new-connection form {
-  display: flex;
-  flex-direction: column;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.new-connection .form-group {
-  margin-bottom: 20px;
+.form-group {
+  margin-bottom: 15px;
 }
 
-.new-connection label {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  color: #34495e;
-  font-weight: 600;
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
 }
 
-.new-connection label svg {
-  margin-right: 8px;
-  color: #3498db;
-}
-
-.new-connection input,
-.new-connection select {
+.form-group input {
   width: 100%;
   padding: 10px;
-  border: 1px solid #bdc3c7;
-  border-radius: 6px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: 14px;
-  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.new-connection input:focus,
-.new-connection select:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-  outline: none;
-}
-
-.new-connection button {
-  background-color: #3498db;
+button {
+  background-color: #9C27B0;
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 6px;
+  padding: 10px 15px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-  font-weight: 600;
-  transition: background-color 0.3s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
 }
 
-.new-connection button:hover {
+button:hover {
   background-color: #2980b9;
 }
 
-.new-connection button:active {
-  transform: translateY(1px);
+button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
 
-.new-connection .error {
-  color: #e74c3c;
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: #fadbd8;
-  border-radius: 6px;
+button svg {
+  margin-right: 8px;
 }
 
-.new-connection .success {
-  color: #27ae60;
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: #d5f5e3;
-  border-radius: 6px;
+.message {
+  padding: 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.message.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.connection-status {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .main-content {
+    padding: 20px;
+  }
+
+  .new-connection h1 {
+    font-size: 20px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+
+  .form-group input,
+  button {
+    font-size: 14px;
+  }
 }

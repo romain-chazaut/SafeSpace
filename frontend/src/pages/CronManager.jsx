@@ -108,8 +108,8 @@ const CronManager = () => {
   }
 
   return (
-    <div className="cron-manager">
-      <div className="cron-content">
+    <div className="cron-container">
+      {/* <div className="cron-content"> */}
         <h1><FaClock /> Gestion des Tâches Cron</h1>
 
         {error && <p className="error-message"><FaExclamationCircle /> {error}</p>}
@@ -177,7 +177,7 @@ const CronManager = () => {
           )}
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 
