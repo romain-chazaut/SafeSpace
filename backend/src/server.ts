@@ -1,22 +1,16 @@
-import 'dotenv/config';
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, FastifyRequest } from 'fastify';
 import cors from '@fastify/cors';
-import connectionRoutes from './routes/database.routes';
-import backupRoutes from './routes/backup.routes';
-import connexion from './routes/connexion.routes';
-import { createPool, testConnection } from './db';
-import backupRoutesSave from './routes/dumpbackservice.routes';
-import cronRoutes from './routes/cron.routes'; // Importer les routes cron
-import { BackupService } from './services/backupService'; // Importer le service de sauvegarde
-import { CronService } from './services/CronService'; // Importer le service des tâches cron
-import connexionAll from './routes/connectionList.routes';
+import { DatabaseService } from './services/database.service';
+import { BackupService } from './services/backupService';
+import { CronService } from './services/CronService';
+import { DatabaseController } from './controllers/database.controller';
+import { BackupController } from './controllers/backupController';
+import { CronController } from './controllers/CronController';
+import { DatabaseConfig } from './services/types';
 
 const fastify: FastifyInstance = Fastify({
   logger: true
 });
-
-// Décoration de l'instance Fastify avec la connexion à la base de données
-fastify.decorate('db', createPool());
 
 // Configuration du middleware CORS
 fastify.register(cors, {
@@ -26,34 +20,74 @@ fastify.register(cors, {
   credentials: true,
 });
 
-// Enregistrement des routes
-fastify.register(connectionRoutes);
-fastify.register(backupRoutes);
-fastify.register(connexion);
-
-fastify.register(backupRoutesSave);
-fastify.register(cronRoutes);
-fastify.register(connexionAll); // Enregistrement des routes cron
- // Enregistrement des routes cron
-
-// Instancier le service de sauvegarde et de gestion des crons
-const backupService = new BackupService();
+// Initialisation des services
+const databaseService = new DatabaseService();
+const backupService = new BackupService(databaseService);
 const cronService = new CronService();
 
+// Initialisation des contrôleurs
+const databaseController = new DatabaseController(databaseService);
+const backupController = new BackupController(backupService);
+const cronController = new CronController(databaseService);
+
+// Routes pour la gestion de la connexion à la base de données
+fastify.post('/connect', async (request, reply) => {
+  return databaseController.connect(request as FastifyRequest<{ Body: DatabaseConfig }>, reply);
+});
+
+fastify.post('/disconnect', async (request, reply) => {
+  return databaseController.disconnect(request, reply);
+});
+
+// Routes pour les opérations de sauvegarde
+fastify.post('/backup', async (request, reply) => {
+  return backupController.createBackup(request as FastifyRequest<{ Body: DatabaseConfig }>, reply);
+});
+
+fastify.get('/backups', async (request, reply) => {
+  return backupController.listBackups(request as FastifyRequest<{ Querystring: { databaseName?: string } }>, reply);
+});
+
+fastify.post('/restore/:sourceBackupId', async (request, reply) => {
+  return backupController.restoreDatabase(request as FastifyRequest<{ Params: { sourceBackupId: string }; Body: { targetDatabaseName: string } }>, reply);
+});
+
+fastify.get('/backup/history', async (request, reply) => {
+  return backupController.getBackupHistory(request, reply);
+}); 
+
+  // Route pour lister les tâches cron
+  fastify.get('/crons', async (request, reply) => {
+    return cronController.listCrons(request, reply);
+  });
+
+  // Route pour ajouter une nouvelle tâche cron
+  fastify.post<{
+    Body: {
+      jobName: string;
+      schedule: string;
+      dbConfig: DatabaseConfig;
+      description?: string;
+    }
+  }>('/crons', async (request, reply) => {
+    return cronController.startCron(request, reply);
+  });
+
+  // Route pour supprimer une tâche cron
+  fastify.delete<{
+    Params: {
+      jobName: string;
+    }
+  }>('/crons/:jobName', async (request, reply) => {
+    return cronController.stopCron(request, reply);
+  });
 
 
-// Démarrage du serveur Fastify
+// Démarrage du serveur
 const start = async () => {
   try {
-    const dbStatus = await testConnection(fastify.db);
-    console.log('Database connection status:', dbStatus);
-
-    if (dbStatus.success) {
-      await fastify.listen({ port: 3000, host: '0.0.0.0' });
-      console.log(`Server is running on http://localhost:3000`);
-    } else {
-      throw new Error('Failed to connect to the database');
-    }
+    await fastify.listen({ port: 3000, host: '0.0.0.0' });
+    console.log(`Server is running on http://localhost:3000`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

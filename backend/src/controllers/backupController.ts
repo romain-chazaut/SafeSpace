@@ -3,14 +3,7 @@ import { BackupService } from '../services/backupService';
 import { DatabaseConfig } from '../services/types';
 
 export class BackupController {
-  closeService() {
-    throw new Error('Method not implemented.');
-  }
-  private backupService: BackupService;
-
-  constructor() {
-    this.backupService = new BackupService();
-  }
+  constructor(private backupService: BackupService) {}
 
   async createBackup(request: FastifyRequest<{ Body: DatabaseConfig }>, reply: FastifyReply) {
     try {
@@ -18,13 +11,21 @@ export class BackupController {
       console.log('Creating backup for database:', dbConfig.database);
 
       const dumpPath = await this.backupService.createDump(dbConfig);
-      const backupId = await this.backupService.saveBackupInfo(dumpPath, dbConfig);
-
-      return reply.code(200).send({ success: true, message: 'Backup created successfully', backupId });
+      // Remarque : saveBackupInfo est maintenant appelé à l'intérieur de createDump
+      
+      return reply.code(200).send({ 
+        success: true, 
+        message: 'Backup created successfully', 
+        backupPath: dumpPath 
+      });
     } catch (error) {
       console.error('Error in createBackup:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      return reply.code(500).send({ success: false, message: 'Backup creation failed', error: errorMessage });
+      return reply.code(500).send({ 
+        success: false, 
+        message: 'Backup creation failed', 
+        error: errorMessage 
+      });
     }
   }
 
@@ -35,7 +36,11 @@ export class BackupController {
     } catch (error) {
       console.error('Error in getBackupHistory:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      return reply.code(500).send({ success: false, message: 'Failed to retrieve backup history', error: errorMessage });
+      return reply.code(500).send({ 
+        success: false, 
+        message: 'Failed to retrieve backup history', 
+        error: errorMessage 
+      });
     }
   }
 
@@ -45,7 +50,7 @@ export class BackupController {
       Body: { targetDatabaseName: string };
     }>,
     reply: FastifyReply
-  ): Promise<FastifyReply> {
+  ) {
     try {
       const sourceBackupId = parseInt(request.params.sourceBackupId, 10);
       const { targetDatabaseName } = request.body;
@@ -54,26 +59,25 @@ export class BackupController {
 
       await this.backupService.restoreDatabase(sourceBackupId, targetDatabaseName);
       
-      return reply.code(200).send({ 
-        success: true, 
-        message: 'Database restored successfully' 
+      return reply.code(200).send({
+        success: true,
+        message: 'Database restored successfully'
       });
     } catch (error) {
       console.error('Error in restoreDatabase:', error);
       if (error instanceof Error && error.message.includes('Aucun backup trouvé')) {
-        return reply.code(404).send({ 
-          success: false, 
-          message: error.message 
+        return reply.code(404).send({
+          success: false,
+          message: error.message
         });
       }
-      return reply.code(500).send({ 
-        success: false, 
-        message: 'Database restoration failed', 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      return reply.code(500).send({
+        success: false,
+        message: 'Database restoration failed',
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   }
-
 
   async listBackups(request: FastifyRequest<{ Querystring: { databaseName?: string } }>, reply: FastifyReply) {
     try {
@@ -83,7 +87,11 @@ export class BackupController {
     } catch (error) {
       console.error('Error in listBackups:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      return reply.code(500).send({ success: false, message: 'Failed to list backups', error: errorMessage });
+      return reply.code(500).send({ 
+        success: false, 
+        message: 'Failed to list backups', 
+        error: errorMessage 
+      });
     }
   }
 }

@@ -1,20 +1,34 @@
 import '../assets/css/Historique.css';
 import React, { useEffect, useState } from 'react';
+import { FaLock } from 'react-icons/fa';
 
 const History = () => {
   const [backups, setBackups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      setIsLoggedIn(loggedIn);
+    };
+
+    checkLoginStatus();
+    if (isLoggedIn) {
+      fetchBackupHistory();
+    } else {
+      setLoading(false);
+    }
+  }, [isLoggedIn]);
 
   const fetchBackupHistory = async () => {
     try {
       const response = await fetch('http://localhost:3000/backup/history');
-      console.log(response)
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération de l\'historique des sauvegardes');
       }
       const data = await response.json();
-      console.log(data);
       setBackups(data.history);
     } catch (error) {
       setError(error.message);
@@ -23,9 +37,14 @@ const History = () => {
     }
   };
 
-  useEffect(() => {
-    fetchBackupHistory();
-  }, []);
+  if (!isLoggedIn) {
+    return (
+      <div className="history-container">
+        <h1 className="history-title"><FaLock /> Accès Restreint</h1>
+        <p className="history-description">Veuillez vous connecter pour accéder à l'historique des sauvegardes.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="history-container">

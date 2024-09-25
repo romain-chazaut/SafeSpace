@@ -2,13 +2,12 @@ import cron, { ScheduledTask } from 'node-cron';
 import { DatabaseConfig } from '../services/types';
 
 export class CronService {
-  private cronJobs: Map<string, ScheduledTask>; // Stocker les tâches cron
+  private cronJobs: Map<string, ScheduledTask>;
 
   constructor() {
-    this.cronJobs = new Map(); // Initialiser la Map pour stocker les tâches cron
+    this.cronJobs = new Map();
   }
 
-  // Démarrer une tâche cron
   startCronJob(jobName: string, schedule: string, dbConfig: DatabaseConfig, backupService: any): void {
     if (this.cronJobs.has(jobName)) {
       throw new Error(`Une tâche cron avec le nom "${jobName}" existe déjà.`);
@@ -25,11 +24,10 @@ export class CronService {
       }
     });
 
-    this.cronJobs.set(jobName, task); // Ajouter la tâche à la liste
+    this.cronJobs.set(jobName, task);
     console.log(`Tâche cron "${jobName}" ajoutée avec succès.`);
   }
 
-  // Arrêter et supprimer une tâche cron
   stopCronJob(jobName: string): boolean {
     const task = this.cronJobs.get(jobName);
     if (task) {
@@ -42,7 +40,6 @@ export class CronService {
     return false;
   }
 
-  // Lister toutes les tâches cron
   listCronJobs(): string[] {
     return Array.from(this.cronJobs.keys());
   }

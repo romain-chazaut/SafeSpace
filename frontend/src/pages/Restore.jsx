@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaDatabase, FaArrowAltCircleUp, FaSpinner, FaExclamationCircle } from 'react-icons/fa';
+import { FaDatabase, FaArrowAltCircleUp, FaSpinner, FaExclamationCircle, FaLock } from 'react-icons/fa';
 import "../assets/css/Restore.css";
 
 const RestoreComponent = () => {
@@ -8,6 +8,16 @@ const RestoreComponent = () => {
   const [targetDatabaseName, setTargetDatabaseName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', content: '' });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      setIsLoggedIn(loggedIn);
+    };
+
+    checkLoginStatus();
+  }, []);
 
   const handleRestore = async (e) => {
     e.preventDefault();
@@ -15,7 +25,7 @@ const RestoreComponent = () => {
     setMessage({ type: '', content: '' });
 
     try {
-      const response = await axios.post(`http://localhost:3000/backups/restore/${sourceDatabaseId}`, {
+      const response = await axios.post(`http://localhost:3000/restore/${sourceDatabaseId}`, {
         targetDatabaseName
       });
       setMessage({ type: 'success', content: 'Restauration réussie!' });
@@ -28,6 +38,17 @@ const RestoreComponent = () => {
       setIsLoading(false);
     }
   };
+
+  if (!isLoggedIn) {
+    return (
+      <div className="restore-manager">
+        <div className="restore-content">
+          <h1><FaLock /> Accès Restreint</h1>
+          <p>Veuillez vous connecter pour accéder à la fonctionnalité de restauration de base de données.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="restore-manager">

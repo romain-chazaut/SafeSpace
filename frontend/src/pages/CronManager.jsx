@@ -7,12 +7,31 @@ const CronManager = () => {
   const [newCron, setNewCron] = useState({ jobName: '', schedule: '', database: '', description: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      setIsLoggedIn(loggedIn);
+    };
+
+    checkLoginStatus();
+    if (isLoggedIn) {
+      fetchCrons();
+    }
+  }, [isLoggedIn]);
 
   const fetchCrons = async () => {
+    if (!isLoggedIn) return;
+
     try {
       const response = await fetch('http://localhost:3000/crons');
-      const data = await response.json();
-      setCrons(data.jobs);
+      if (response.ok) {
+        const data = await response.json();
+        setCrons(data.jobs);
+      } else {
+        throw new Error('Erreur lors de la récupération des crons');
+      }
     } catch (err) {
       setError('Erreur lors de la récupération des crons.');
     }
@@ -20,16 +39,31 @@ const CronManager = () => {
 
   const addCron = async (e) => {
     e.preventDefault();
+    if (!isLoggedIn) {
+      setError('Vous devez être connecté pour ajouter une tâche cron.');
+      return;
+    }
+
     if (!newCron.jobName || !newCron.schedule || !newCron.database) {
       setError('Tous les champs obligatoires doivent être remplis.');
       return;
     }
 
+    const databaseConfig = JSON.parse(localStorage.getItem('databaseConfig') || '{}');
+
     try {
       const response = await fetch('http://localhost:3000/crons', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newCron),
+        body: JSON.stringify({
+          jobName: newCron.jobName,
+          schedule: newCron.schedule,
+          dbConfig: {
+            ...databaseConfig,
+            database: newCron.database
+          },
+          description: newCron.description
+        }),
       });
       const result = await response.json();
       if (response.ok) {
@@ -48,6 +82,11 @@ const CronManager = () => {
   };
 
   const deleteCron = async (jobName) => {
+    if (!isLoggedIn) {
+      setError('Vous devez être connecté pour supprimer une tâche cron.');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3000/crons/${jobName}`, {
         method: 'DELETE',
@@ -64,9 +103,9 @@ const CronManager = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCrons();
-  }, []);
+  if (!isLoggedIn) {
+    return <p>Veuillez vous connecter pour gérer les tâches cron.</p>;
+  }
 
   return (
     <div className="cron-manager">

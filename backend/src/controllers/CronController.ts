@@ -1,43 +1,42 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CronService } from '../services/CronService';
-import { BackupService } from '../services/backupService'; // Assurez-vous que BackupService est correctement importé
+import { BackupService } from '../services/backupService';
+import { DatabaseService } from '../services/database.service';
+import { DatabaseConfig } from '../services/types';
 
 export class CronController {
   private cronService: CronService;
   private backupService: BackupService;
 
-  constructor() {
+  constructor(private databaseService: DatabaseService) {
     this.cronService = new CronService();
-    this.backupService = new BackupService();
+    this.backupService = new BackupService(this.databaseService);
   }
 
-  // Lister toutes les tâches cron
   async listCrons(_request: FastifyRequest, reply: FastifyReply) {
     const jobs = this.cronService.listCronJobs();
     reply.send({ success: true, jobs });
   }
 
-  async startCron(request: FastifyRequest<{ Body: { jobName: string, schedule: string, database: string } }>, reply: FastifyReply) {
-    const { jobName, schedule, database } = request.body;
-    
+  async startCron(request: FastifyRequest<{ Body: { jobName: string, schedule: string, dbConfig: DatabaseConfig, description?: string } }>, reply: FastifyReply) {
+    const { jobName, schedule, dbConfig, description } = request.body;
+
     try {
-      if (!jobName || !schedule || !database) {
-        throw new Error("Tous les champs 'jobName', 'schedule', et 'database' sont requis.");
+      if (!jobName || !schedule || !dbConfig || !dbConfig.database) {
+        throw new Error("Tous les champs 'jobName', 'schedule', et 'dbConfig.database' sont requis.");
       }
-  
-      this.cronService.startCronJob(jobName, schedule, { database }, this.backupService);
+
+      console.log('Données reçues:', { jobName, schedule, dbConfig, description });
+
+      this.cronService.startCronJob(jobName, schedule, dbConfig, this.backupService);
+
       reply.send({ success: true, message: `Tâche cron "${jobName}" ajoutée avec succès.` });
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Erreur lors de l'ajout de la tâche cron :", error);
-        reply.status(400).send({ success: false, message: error.message });
-      } else {
-        reply.status(400).send({ success: false, message: 'Une erreur inconnue est survenue.' });
-      }
+      console.error("Erreur lors de l'ajout de la tâche cron :", error);
+      reply.status(400).send({ success: false, message: error instanceof Error ? error.message : 'Une erreur inconnue est survenue.' });
     }
   }
 
-  // Arrêter une tâche cron
   async stopCron(request: FastifyRequest<{ Params: { jobName: string } }>, reply: FastifyReply) {
     const { jobName } = request.params;
 
