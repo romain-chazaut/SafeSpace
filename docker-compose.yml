@@ -28,7 +28,7 @@ services:
     container_name: backend_container
     restart: always
     ports:
-      - "3001:3000"  # Cela exposera le port 3000 du conteneur sur le port 3001 de l'hôte
+      - "3000:3000"  # Cela exposera le port 3000 du conteneur sur le port 3001 de l'hôte
     depends_on:
       - db
     environment:
@@ -41,8 +41,19 @@ services:
       - backend_code:/backend
       - backend_backups:/backend/backups
 
+
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: frontend_container
+    restart: always
+    ports:
+      - "5173:5173"  
+    depends_on:
+      - backend
+
 volumes:
+
   postgres_data:
   backend_code:
   backend_backups:
-  

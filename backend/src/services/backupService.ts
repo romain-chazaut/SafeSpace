@@ -10,9 +10,8 @@ export class BackupService {
   private dockerContainerName: string;
 
   constructor(private databaseService: DatabaseService) {
-    this.backupDir = '../backend/backup';
-    console.log('Backup directory:', this.backupDir);
-    this.dockerContainerName = 'postgres_container';
+    this.dockerContainerName = process.env.POSTGRES_CONTAINER_NAME || 'postgres_container';
+    this.backupDir = process.env.BACKUP_DIR || '../backend/backup';
   }
 
   async initialize() {
