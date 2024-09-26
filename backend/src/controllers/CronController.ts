@@ -1,3 +1,4 @@
+// CronController.ts
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CronService } from '../services/CronService';
 import { BackupService } from '../services/backupService';
@@ -5,13 +6,11 @@ import { DatabaseService } from '../services/database.service';
 import { DatabaseConfig } from '../services/types';
 
 export class CronController {
-  private cronService: CronService;
-  private backupService: BackupService;
-
-  constructor(private databaseService: DatabaseService) {
-    this.cronService = new CronService();
-    this.backupService = new BackupService(this.databaseService);
-  }
+  constructor(
+    private databaseService: DatabaseService,
+    private cronService: CronService,
+    private backupService: BackupService
+  ) {}
 
   async listCrons(_request: FastifyRequest, reply: FastifyReply) {
     const jobs = this.cronService.listCronJobs();

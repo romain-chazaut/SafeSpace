@@ -240,4 +240,32 @@ export class BackupService {
     });
     console.log('Tâche cron planifiée pour :', schedule);
   }
+
+  async getDatabaseContents(): Promise<any> {
+    try {
+      // Get all tables
+      const tablesQuery = `
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        ORDER BY table_name;
+      `;
+      const tablesResult = await this.databaseService.getPool().query(tablesQuery);
+      const tables = tablesResult.rows.map(row => row.table_name);
+
+      // Get contents of each table
+      const contents: { [key: string]: any[] } = {};
+      for (const table of tables) {
+        const contentQuery = `SELECT * FROM "${table}" LIMIT 100;`;
+        const contentResult = await this.databaseService.getPool().query(contentQuery);
+        contents[table] = contentResult.rows;
+      }
+
+      return { tables, contents };
+    } catch (error) {
+      console.error('Error fetching database contents:', error);
+      throw error;
+    }
+  }
+  
 }

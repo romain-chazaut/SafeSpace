@@ -1,5 +1,6 @@
-import Fastify, { FastifyInstance, FastifyRequest } from 'fastify';
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
+import { Server as SocketIOServer } from 'socket.io';
 import { DatabaseService } from './services/database.service';
 import { BackupService } from './services/backupService';
 import { CronService } from './services/CronService';
@@ -9,12 +10,11 @@ import { CronController } from './controllers/CronController';
 import { DatabaseConfig } from './services/types';
 import ConnectionService from './services/connectionServiceList';
 
-
 const fastify: FastifyInstance = Fastify({
   logger: true
 });
 
-// Configuration du middleware CORS
+// Enregistrement du plugin CORS
 fastify.register(cors, {
   origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -25,54 +25,51 @@ fastify.register(cors, {
 // Initialisation des services
 const databaseService = new DatabaseService();
 const backupService = new BackupService(databaseService);
-const cronService = new CronService();
 const connectionService = new ConnectionService(databaseService);
 
+let io: SocketIOServer;
+let cronService: CronService;
+let databaseController: DatabaseController;
+let backupController: BackupController;
+let cronController: CronController;
 
-// Initialisation des contrôleurs
-const databaseController = new DatabaseController(databaseService);
-const backupController = new BackupController(backupService);
-const cronController = new CronController(databaseService);
+// Fonction pour configurer les routes
+function setupRoutes() {
+  fastify.post<{ Body: DatabaseConfig }>('/connect', async (request, reply) => {
+    return databaseController.connect(request, reply);
+  });
 
-// Routes pour la gestion de la connexion à la base de données
-fastify.post('/connect', async (request, reply) => {
-  return databaseController.connect(request as FastifyRequest<{ Body: DatabaseConfig }>, reply);
-});
+  fastify.post('/disconnect', async (request, reply) => {
+    return databaseController.disconnect(request, reply);
+  });
 
-fastify.post('/disconnect', async (request, reply) => {
-  return databaseController.disconnect(request, reply);
-});
+  fastify.post<{ Body: DatabaseConfig }>('/backup', async (request, reply) => {
+    return backupController.createBackup(request, reply);
+  });
 
-// Routes pour les opérations de sauvegarde
-fastify.post('/backup', async (request, reply) => {
-  return backupController.createBackup(request as FastifyRequest<{ Body: DatabaseConfig }>, reply);
-});
+  fastify.get<{ Querystring: { databaseName?: string } }>('/backups', async (request, reply) => {
+    return backupController.listBackups(request, reply);
+  });
 
-fastify.get('/backups', async (request, reply) => {
-  return backupController.listBackups(request as FastifyRequest<{ Querystring: { databaseName?: string } }>, reply);
-});
+  fastify.post<{ Params: { sourceBackupId: string }; Body: { targetDatabaseName: string } }>('/restore/:sourceBackupId', async (request, reply) => {
+    return backupController.restoreDatabase(request, reply);
+  });
 
-fastify.post('/restore/:sourceBackupId', async (request, reply) => {
-  return backupController.restoreDatabase(request as FastifyRequest<{ Params: { sourceBackupId: string }; Body: { targetDatabaseName: string } }>, reply);
-});
-
-fastify.get('/backup/history', {
-  schema: {
-    querystring: {
-      page: { type: 'integer', minimum: 1 },
-      limit: { type: 'integer', minimum: 1, maximum: 100 }
+  fastify.get<{ Querystring: { page?: string; limit?: string } }>('/backup/history', {
+    schema: {
+      querystring: {
+        page: { type: 'integer', minimum: 1 },
+        limit: { type: 'integer', minimum: 1, maximum: 100 }
+      }
     }
-  }
-}, async (request, reply) => {
-  return backupController.getBackupHistory(request as FastifyRequest<{ Querystring: { page?: string; limit?: string } }>, reply);
-});
+  }, async (request, reply) => {
+    return backupController.getBackupHistory(request, reply);
+  });
 
-  // Route pour lister les tâches cron
   fastify.get('/crons', async (request, reply) => {
     return cronController.listCrons(request, reply);
   });
 
-  // Route pour ajouter une nouvelle tâche cron
   fastify.post<{
     Body: {
       jobName: string;
@@ -84,7 +81,6 @@ fastify.get('/backup/history', {
     return cronController.startCron(request, reply);
   });
 
-  // Route pour supprimer une tâche cron
   fastify.delete<{
     Params: {
       jobName: string;
@@ -92,24 +88,54 @@ fastify.get('/backup/history', {
   }>('/crons/:jobName', async (request, reply) => {
     return cronController.stopCron(request, reply);
   });
-  
+
   fastify.get('/connections', async (request, reply) => {
-    console.log('Received request for /connections');
+    console.log('Requête reçue pour /connections');
     try {
       const connections = await connectionService.getConnectionsAll();
-      console.log('Retrieved connections:', connections);
+      console.log('Connexions récupérées:', connections);
       reply.send(connections);
     } catch (error) {
-      console.error('Failed to retrieve connections:', error);
-      reply.status(500).send({ error: 'Failed to retrieve connections', details: (error as Error).message });
+      console.error('Échec de la récupération des connexions:', error);
+      reply.status(500).send({ error: 'Échec de la récupération des connexions', details: (error as Error).message });
     }
   });
+}
 
-// Démarrage du serveur
+// Fonction pour démarrer le serveur
 const start = async () => {
   try {
+    // Configuration des routes avant de démarrer le serveur
+    setupRoutes();
+
     await fastify.listen({ port: 3000, host: '0.0.0.0' });
-    console.log(`Server is running on http://localhost:3000`);
+    console.log(`Le serveur fonctionne sur http://localhost:3000`);
+
+    // Initialisation de Socket.IO
+    io = new SocketIOServer(fastify.server, {
+      cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+      }
+    });
+
+    // Initialisation des services qui dépendent de Socket.IO
+    cronService = new CronService(io);
+
+    // Initialisation des contrôleurs
+    databaseController = new DatabaseController(databaseService);
+    backupController = new BackupController(backupService);
+    cronController = new CronController(databaseService, cronService, backupService);
+
+    // Gestionnaire de connexion Socket.IO
+    io.on('connection', (socket) => {
+      console.log('Un client Socket.IO s\'est connecté');
+
+      socket.on('disconnect', () => {
+        console.log('Un client Socket.IO s\'est déconnecté');
+      });
+    });
+
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
