@@ -64,7 +64,7 @@ fastify.get('/backup/history', {
     }
   }
 }, async (request, reply) => {
-  return backupController.getBackupHistory(request, reply);
+  return backupController.getBackupHistory(request as FastifyRequest<{ Querystring: { page?: string; limit?: string } }>, reply);
 });
 
   // Route pour lister les tâches cron
