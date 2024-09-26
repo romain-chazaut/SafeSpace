@@ -4,6 +4,8 @@ import '../assets/css/Dashboard.css';
 
 const Dashboard = () => {
   return (
+    <div className="dashboard">
+
     <div className="dashboard-container">
       <div className="dashboard-content">
         <h1 className="dashboard-title">Tableau de Bord SafeBase</h1>
@@ -43,6 +45,9 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
+    </div>
+
+
   );
 };
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FaDatabase, FaServer, FaUser, FaLock, FaPlug, FaUnlink, FaCheckCircle } from 'react-icons/fa';
+import "../assets/css/NewConnections.css";
 
 const DatabaseConnection = () => {
   const [config, setConfig] = useState({
@@ -10,26 +12,36 @@ const DatabaseConnection = () => {
     password: '',
   });
   const [isConnected, setIsConnected] = useState(false);
+  const [message, setMessage] = useState({ type: '', content: '' });
 
   useEffect(() => {
-    // Vérifier le localStorage au chargement du composant
     const storedConfig = localStorage.getItem('databaseConfig');
     if (storedConfig) {
       const parsedConfig = JSON.parse(storedConfig);
-      setConfig(parsedConfig);
-      handleConnect(parsedConfig);
+      setConfig(prevConfig => ({
+        ...prevConfig,
+        host: parsedConfig.host,
+        port: parsedConfig.port,
+        database: parsedConfig.database,
+      }));
     }
+    const wasConnected = localStorage.getItem('isLoggedIn') === 'true';
+    setIsConnected(wasConnected);
   }, []);
 
   const handleConnect = async (configToUse = config) => {
     try {
       await axios.post('http://localhost:3000/connect', configToUse);
       setIsConnected(true);
-      localStorage.setItem('databaseConfig', JSON.stringify(configToUse));
-      localStorage.setItem('isLoggedIn', 'true'); // Ajouter cette ligne
-      alert('Connected to database');
+      localStorage.setItem('databaseConfig', JSON.stringify({
+        host: configToUse.host,
+        port: configToUse.port,
+        database: configToUse.database,
+      }));
+      localStorage.setItem('isLoggedIn', 'true');
+      setMessage({ type: 'success', content: 'Connecté à la base de données avec succès.' });
     } catch (error) {
-      alert('Failed to connect to database');
+      setMessage({ type: 'error', content: 'Échec de la connexion à la base de données.' });
     }
   };
 
@@ -38,10 +50,15 @@ const DatabaseConnection = () => {
       await axios.post('http://localhost:3000/disconnect');
       setIsConnected(false);
       localStorage.removeItem('databaseConfig');
-      localStorage.setItem('isLoggedIn', 'false'); // Ajouter cette ligne
-      alert('Disconnected from database');
+      localStorage.setItem('isLoggedIn', 'false');
+      setConfig(prevConfig => ({
+        ...prevConfig,
+        user: '',
+        password: '',
+      }));
+      setMessage({ type: 'success', content: 'Déconnecté de la base de données.' });
     } catch (error) {
-      alert('Failed to disconnect from database');
+      setMessage({ type: 'error', content: 'Échec de la déconnexion.' });
     }
   };
 
@@ -51,48 +68,92 @@ const DatabaseConnection = () => {
   };
 
   return (
-    <div>
-      <h2>Database Connection</h2>
-      <input
-        type="text"
-        name="host"
-        placeholder="Host"
-        value={config.host}
-        onChange={handleInputChange}
-      />
-      <input
-        type="number"
-        name="port"
-        placeholder="Port"
-        value={config.port}
-        onChange={handleInputChange}
-      />
-      <input
-        type="text"
-        name="database"
-        placeholder="Database"
-        value={config.database}
-        onChange={handleInputChange}
-      />
-      <input
-        type="text"
-        name="user"
-        placeholder="User"
-        value={config.user}
-        onChange={handleInputChange}
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={config.password}
-        onChange={handleInputChange}
-      />
-      {!isConnected ? (
-        <button onClick={() => handleConnect()}>Connect</button>
-      ) : (
-        <button onClick={handleDisconnect}>Disconnect</button>
-      )}
+    <div className="main-content">
+      <div className="centered-content new-connection">
+        <h1><FaDatabase /> Connexion à la Base de Données</h1>
+        {isConnected ? (
+          <div className="connection-status">
+            <p className="description">
+              <FaCheckCircle /> Vous êtes actuellement connecté à la base de données.
+            </p>
+            <button onClick={handleDisconnect}><FaUnlink /> Se déconnecter</button>
+          </div>
+        ) : (
+          <>
+            <p className="description">
+              <FaServer /> Configurez votre connexion à la base de données PostgreSQL ici.
+            </p>
+            {message.content && (
+              <div className={`message ${message.type}`}>
+                {message.content}
+              </div>
+            )}
+            <form onSubmit={(e) => { e.preventDefault(); handleConnect(); }}>
+              <div className="form-group">
+                <label htmlFor="host"><FaServer /> Hôte</label>
+                <input
+                  type="text"
+                  id="host"
+                  name="host"
+                  placeholder="Exemple: localhost"
+                  value={config.host}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="port"><FaPlug /> Port</label>
+                <input
+                  type="number"
+                  id="port"
+                  name="port"
+                  placeholder="Exemple: 5432"
+                  value={config.port}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="database"><FaDatabase /> Base de données</label>
+                <input
+                  type="text"
+                  id="database"
+                  name="database"
+                  placeholder="Nom de la base de données"
+                  value={config.database}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="user"><FaUser /> Utilisateur</label>
+                <input
+                  type="text"
+                  id="user"
+                  name="user"
+                  placeholder="Nom d'utilisateur"
+                  value={config.user}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password"><FaLock /> Mot de passe</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Mot de passe"
+                  value={config.password}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <button type="submit"><FaPlug /> Se connecter</button>
+            </form>
+          </>
+        )}
+      </div>
     </div>
   );
 };

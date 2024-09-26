@@ -29,10 +29,25 @@ export class BackupController {
     }
   }
 
-  async getBackupHistory(request: FastifyRequest, reply: FastifyReply) {
+  async getBackupHistory(request: FastifyRequest<{Querystring: {page?: string, limit?: string}}>, reply: FastifyReply) {
     try {
-      const history = await this.backupService.getBackupHistory();
-      return reply.code(200).send({ success: true, history });
+      const page = parseInt(request.query.page || '1');
+      const limit = parseInt(request.query.limit || '10');
+  
+      const { rows: history, totalCount } = await this.backupService.getBackupHistory(page, limit);
+      
+      const totalPages = Math.ceil(totalCount / limit);
+      
+      return reply.code(200).send({ 
+        success: true, 
+        history,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: totalCount,
+          itemsPerPage: limit
+        }
+      });
     } catch (error) {
       console.error('Error in getBackupHistory:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

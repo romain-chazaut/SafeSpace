@@ -8,6 +8,8 @@ import { DatabaseController } from './controllers/database.controller';
 import { BackupController } from './controllers/backupController';
 import { CronController } from './controllers/CronController';
 import { DatabaseConfig } from './services/types';
+import ConnectionService from './services/connectionServiceList';
+
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -29,6 +31,8 @@ fastify.register(cors, {
 const databaseService = new DatabaseService();
 const backupService = new BackupService(databaseService);
 const cronService = new CronService();
+const connectionService = new ConnectionService(databaseService);
+
 
 // Initialisation des contrôleurs
 const databaseController = new DatabaseController(databaseService);
@@ -57,9 +61,16 @@ fastify.post('/restore/:sourceBackupId', async (request, reply) => {
   return backupController.restoreDatabase(request as FastifyRequest<{ Params: { sourceBackupId: string }; Body: { targetDatabaseName: string } }>, reply);
 });
 
-fastify.get('/backup/history', async (request, reply) => {
-  return backupController.getBackupHistory(request, reply);
-}); 
+fastify.get('/backup/history', {
+  schema: {
+    querystring: {
+      page: { type: 'integer', minimum: 1 },
+      limit: { type: 'integer', minimum: 1, maximum: 100 }
+    }
+  }
+}, async (request, reply) => {
+  return backupController.getBackupHistory(request as FastifyRequest<{ Querystring: { page?: string; limit?: string } }>, reply);
+});
 
 // Route pour lister les tâches cron
 fastify.get('/crons', async (request, reply) => {
@@ -78,14 +89,26 @@ fastify.post<{
   return cronController.startCron(request, reply);
 });
 
-// Route pour supprimer une tâche cron
-fastify.delete<{
-  Params: {
-    jobName: string;
-  }
-}>('/crons/:jobName', async (request, reply) => {
-  return cronController.stopCron(request, reply);
-});
+  // Route pour supprimer une tâche cron
+  fastify.delete<{
+    Params: {
+      jobName: string;
+    }
+  }>('/crons/:jobName', async (request, reply) => {
+    return cronController.stopCron(request, reply);
+  });
+  
+  fastify.get('/connections', async (request, reply) => {
+    console.log('Received request for /connections');
+    try {
+      const connections = await connectionService.getConnectionsAll();
+      console.log('Retrieved connections:', connections);
+      reply.send(connections);
+    } catch (error) {
+      console.error('Failed to retrieve connections:', error);
+      reply.status(500).send({ error: 'Failed to retrieve connections', details: (error as Error).message });
+    }
+  });
 
 // Démarrage du serveur
 const start = async () => {

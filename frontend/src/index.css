@@ -2,7 +2,7 @@
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box; /* Assure que le padding et les bordures sont inclus dans la largeur totale */
 }
 
 body {
@@ -10,7 +10,6 @@ body {
   background-color: #ffffff;
   color: #000000;
   line-height: 1.6;
-  display: flex;
 }
 
 /* Navigation latérale */
@@ -44,84 +43,50 @@ body {
 
 .sidebar a svg {
   margin-right: 10px;
-  font-size: 20px;
 }
 
 /* Conteneur principal pour le contenu */
 .main-content {
-  flex-grow: 1;
+  flex-grow: 1; /* Permet au contenu principal de prendre tout l'espace disponible */
   margin-left: 250px; /* Correspond à la largeur de la sidebar */
-  padding: 20px;
-  width: calc(100% - 250px); /* Largeur totale moins la largeur de la sidebar */
-  min-height: 100vh;
+  padding: 10px; /* Ajoute du padding autour du contenu */
+  width: calc(100% - 20Z0px); /* Largeur totale moins la largeur de la sidebar */
 }
 
 /* Styles pour le contenu spécifique */
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: none; /* Permet au conteneur de prendre toute la largeur */
+  margin: 0 auto; /* Centre le conteneur sur l'écran */
+  padding: 10px; /* Ajoute du padding autour du contenu */
 }
 
-/* Le reste du CSS reste inchangé */
-
+/* Autres styles généraux */
 h1 {
   font-size: 2.5rem;
   color: #000000;
-  margin-bottom: 20px;
-  text-align: center;
-  font-weight: 700;
 }
 
-/* ... (le reste de votre CSS) ... */
-
-/* Styles spécifiques pour les tableaux */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
+    width: calc(100% - (padding ou marges)); /* Assurez-vous que les tables prennent également toute la largeur disponible */
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
 table th, table td {
-  padding: 15px;
-  border: 1px solid #ddd;
-  text-align: left;
+    padding: 15px;
+    border: 1px solid #ddd;
+    text-align: left;
 }
 
-table th {
-  background-color: #333;
-  color: white;
-  font-weight: 600;
-  text-transform: uppercase;
-}
+@media (max-width:768px) {
+    .sidebar {
+        width:100%;
+        height:auto; 
+        position:absolute; 
+    }
 
-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-/* Ajout de styles responsives */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
-
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .container {
-    margin: 0;
-    width: 100%;
-  }
+    .main-content {
+        margin-left:0; 
+        width:auto; 
+    }
 }
