@@ -1,3 +1,4 @@
+
 services:
   db:
     image: postgres:latest
@@ -28,7 +29,7 @@ services:
     container_name: backend_container
     restart: always
     ports:
-      - "3001:3000"  # Cela exposera le port 3000 du conteneur sur le port 3001 de l'hôte
+      - "3000:3000" 
     depends_on:
       - db
     environment:
@@ -38,11 +39,29 @@ services:
       - DB_PASSWORD=mysecretpassword
       - DB_NAME=postgres
     volumes:
-      - backend_code:/backend
+      - backend_src:/backend
       - backend_backups:/backend/backups
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3000"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: frontend_container
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - frontend_src:/frontend
+      - /frontend/node_modules
 
 volumes:
   postgres_data:
-  backend_code:
   backend_backups:
-  
+  backend_src:
+  frontend_src:

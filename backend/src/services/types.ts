@@ -1,6 +1,10 @@
 export interface DatabaseConfig {
-    database: string;
-  }
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
+}
   
   export interface BackupResult {
     dumpPath: string;

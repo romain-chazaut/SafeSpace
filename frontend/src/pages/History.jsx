@@ -1,6 +1,6 @@
 import '../assets/css/Historique.css';
 import React, { useEffect, useState, useCallback } from 'react';
-import { FaLock, FaSpinner, FaChevronLeft, FaChevronRight, FaSave, FaUndo, FaInfoCircle } from 'react-icons/fa';
+import { FaLock, FaSpinner, FaChevronLeft, FaChevronRight, FaDatabase, FaUndo, FaInfoCircle } from 'react-icons/fa';
 
 const History = () => {
   const [backups, setBackups] = useState([]);
@@ -49,7 +49,7 @@ const History = () => {
   const getActionIcon = (action) => {
     switch (action.toLowerCase()) {
       case 'save':
-        return <FaSave className="action-icon save" title="Sauvegarde" />;
+        return <FaDatabase className="action-icon save" title="Sauvegarde" />;
       case 'restore':
         return <FaUndo className="action-icon restore" title="Restauration" />;
       default:
@@ -77,10 +77,15 @@ const History = () => {
       {!loading && !error && backups.length > 0 ? (
         <>
           <div className="legend">
-            
-            <FaInfoCircle /> Légende :
-            <span className="legend-item"><FaSave className="action-icon save" /> Sauvegarde</span>
-            <span className="legend-item"><FaUndo className="action-icon restore" /> Restauration</span>
+            <FaInfoCircle className="legend-icon" /> Légende :
+            <div className="legend-items">
+              <span className="legend-item">
+                <FaDatabase className="action-icon save" /> Sauvegarde
+              </span>
+              <span className="legend-item">
+                <FaUndo className="action-icon restore" /> Restauration
+              </span>
+            </div>
           </div>
           <div className="table-container">
             <table className="history-table">

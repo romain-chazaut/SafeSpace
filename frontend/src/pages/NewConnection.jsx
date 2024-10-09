@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { FaDatabase, FaServer, FaUser, FaLock, FaPlug, FaUnlink, FaCheckCircle } from 'react-icons/fa';
+import { FaDatabase, FaServer, FaUser, FaLock, FaPlug, FaUnlink, FaCheckCircle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import "../assets/css/NewConnections.css";
+import { AuthContext } from '../AuthContext';
 
 const DatabaseConnection = () => {
   const [config, setConfig] = useState({
@@ -13,6 +14,8 @@ const DatabaseConnection = () => {
   });
   const [isConnected, setIsConnected] = useState(false);
   const [message, setMessage] = useState({ type: '', content: '' });
+  const { isLoggedIn, login, logout } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const storedConfig = localStorage.getItem('databaseConfig');
@@ -32,6 +35,7 @@ const DatabaseConnection = () => {
   const handleConnect = async (configToUse = config) => {
     try {
       await axios.post('http://localhost:3000/connect', configToUse);
+      login();
       setIsConnected(true);
       localStorage.setItem('databaseConfig', JSON.stringify({
         host: configToUse.host,
@@ -48,6 +52,7 @@ const DatabaseConnection = () => {
   const handleDisconnect = async () => {
     try {
       await axios.post('http://localhost:3000/disconnect');
+      logout();
       setIsConnected(false);
       localStorage.removeItem('databaseConfig');
       localStorage.setItem('isLoggedIn', 'false');
@@ -65,6 +70,10 @@ const DatabaseConnection = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setConfig({ ...config, [name]: value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -139,15 +148,24 @@ const DatabaseConnection = () => {
               </div>
               <div className="form-group">
                 <label htmlFor="password"><FaLock /> Mot de passe</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Mot de passe"
-                  value={config.password}
-                  onChange={handleInputChange}
-                  required
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    placeholder="Mot de passe"
+                    value={config.password}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <button 
+                    type="button" 
+                    className="toggle-password"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
               </div>
               <button type="submit"><FaPlug /> Se connecter</button>
             </form>

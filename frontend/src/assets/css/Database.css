@@ -1,41 +1,138 @@
-.main-content {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-  }
-  
-  .centered-content {
-    max-width: 800px;
-    width: 100%;
-  }
-  
-  .database {
-    background-color: #d1c4e9; /* Violet clair, vous pouvez ajuster cette couleur */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .database h1 {
-    color: #4a148c; /* Violet foncé pour le titre */
-    margin-bottom: 20px;
-  }
-  
-  .database p {
-    margin-bottom: 20px;
-  }
-  
-  .database ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .database li {
-    background-color: #fff;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
+.database-manager {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.database-manager h2 {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.database-manager h3 {
+  color: #555;
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.database-list-container {
+  max-height: 250px; /* Hauteur pour 5 éléments (ajustez si nécessaire) */
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.database-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.database-item {
+  background-color: #ffffff;
+  border-left: 4px solid #6200ea;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.database-item:last-child {
+  margin-bottom: 0;
+}
+
+.database-item:hover {
+  transform: translateX(5px);
+  background-color: #f0f0f0;
+}
+
+.database-item.current-database {
+  border-left-color: #4caf50;
+  font-weight: bold;
+}
+
+.current-indicator {
+  color: #4caf50;
+  margin-right: 0.5rem;
+  font-size: 0.9em;
+}
+
+.create-database-form {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.create-database-form input {
+  flex-grow: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.create-database-form button {
+  padding: 0.75rem 1.5rem;
+  background-color: #6200ea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.create-database-form button:hover {
+  background-color: #3700b3;
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.database-contents {
+  margin-top: 2rem;
+}
+
+.table-content {
+  margin-bottom: 2rem;
+}
+
+.table-content h4 {
+  margin-bottom: 1rem;
+}
+
+.table-content table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.table-content th, .table-content td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table-content th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.table-content tr:last-child td {
+  border-bottom: none;
+}

@@ -58,5 +58,21 @@ export class DatabaseService {
       throw error;
     }
   }
+
+  async createNewConnection(databaseName: string): Promise<Pool> {
+    if (!this.pool) {
+      throw new Error('Database not connected');
+    }
+    const newConfig = { ...this.pool.options, database: databaseName };
+    return new Pool(newConfig);
+  }
+
+  
+  setPool(newPool: Pool): void {
+    if (this.pool) {
+      this.pool.end(); // Close the old pool
+    }
+    this.pool = newPool;
+  }
   
 }
