@@ -1,4 +1,3 @@
-// Test pour les fonctionnalités avancées du CronController avec validation et gestion des erreurs
 import { CronController } from '../controllers/CronController';
 import { CronService } from '../services/CronService';
 import { DatabaseService } from '../services/database.service';
@@ -11,7 +10,7 @@ jest.mock('../services/CronService');
 jest.mock('../services/database.service');
 jest.mock('../services/backupService');
 
-describe('CronController - Tests avancés', () => {
+describe('CronController', () => {
   let cronController: CronController;
   let cronService: jest.Mocked<CronService>;
   let databaseService: jest.Mocked<DatabaseService>;
@@ -22,7 +21,7 @@ describe('CronController - Tests avancés', () => {
   beforeAll(() => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
-  
+
   afterAll(() => {
     (console.error as jest.Mock).mockRestore();
   });

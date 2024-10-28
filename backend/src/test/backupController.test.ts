@@ -1,4 +1,3 @@
-// Fichier : backupController.test.ts
 import { BackupController } from '../controllers/backupController';
 import { BackupService } from '../services/backupService';
 import { DatabaseService } from '../services/database.service';
@@ -16,11 +15,11 @@ describe('BackupController', () => {
   beforeAll(() => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
-  
+
   afterAll(() => {
     (console.error as jest.Mock).mockRestore();
   });
-  
+
   beforeEach(() => {
     const databaseService = new DatabaseService() as jest.Mocked<DatabaseService>;
     backupService = new BackupService(databaseService) as jest.Mocked<BackupService>;
@@ -50,10 +49,7 @@ describe('BackupController', () => {
   });
 
   it('should handle network error during backup creation', async () => {
-    const request = {
-      body: { database: 'network_db' } as DatabaseConfig,
-    } as FastifyRequest<{ Body: DatabaseConfig }>;
-
+    const request = { body: { database: 'network_db' } } as FastifyRequest<{ Body: DatabaseConfig }>;
     const networkError = new Error('Network error');
     backupService.createDump.mockRejectedValue(networkError);
 
@@ -62,16 +58,13 @@ describe('BackupController', () => {
     expect(mockReply.code).toHaveBeenCalledWith(500);
     expect(mockReply.send).toHaveBeenCalledWith({
       success: false,
-      message: 'Backup creation failed', // Message d'erreur générique
+      message: 'Backup creation failed',
       error: networkError.message,
     });
   });
 
   it('should handle permission error during backup creation', async () => {
-    const request = {
-      body: { database: 'restricted_db' } as DatabaseConfig,
-    } as FastifyRequest<{ Body: DatabaseConfig }>;
-
+    const request = { body: { database: 'restricted_db' } } as FastifyRequest<{ Body: DatabaseConfig }>;
     const permissionError = new Error('Permission denied');
     backupService.createDump.mockRejectedValue(permissionError);
 
@@ -80,8 +73,23 @@ describe('BackupController', () => {
     expect(mockReply.code).toHaveBeenCalledWith(500);
     expect(mockReply.send).toHaveBeenCalledWith({
       success: false,
-      message: 'Backup creation failed', // Message d'erreur générique
+      message: 'Backup creation failed',
       error: permissionError.message,
+    });
+  });
+
+  it('should handle invalid path error during backup creation', async () => {
+    const request = { body: { database: 'invalid_path_db' } } as FastifyRequest<{ Body: DatabaseConfig }>;
+    const pathError = new Error('Invalid path');
+    backupService.createDump.mockRejectedValue(pathError);
+
+    await backupController.createBackup(request, mockReply);
+
+    expect(mockReply.code).toHaveBeenCalledWith(500);
+    expect(mockReply.send).toHaveBeenCalledWith({
+      success: false,
+      message: 'Backup creation failed',
+      error: pathError.message,
     });
   });
 });

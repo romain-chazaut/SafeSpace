@@ -1,0 +1,30 @@
+test_cases:
+  - id: TC01
+    description: "Test successful backup creation"
+    steps:
+      - Send a request to create a backup for a specified database
+    expected_result: "Backup created successfully with a file path returned"
+
+  - id: TC02
+    description: "Test network error handling during backup"
+    steps:
+      - Simulate a network error during the backup creation
+    expected_result: "Response code 500 with error message indicating network issues"
+
+  - id: TC03
+    description: "Test permission error handling during backup"
+    steps:
+      - Simulate a permission error during the backup process
+    expected_result: "Response code 500 with error message indicating permission issues"
+
+  - id: TC04
+    description: "Test cron job initialization success"
+    steps:
+      - Send a request to initialize a cron job for database backup
+    expected_result: "Cron job initialized with success message"
+
+  - id: TC05
+    description: "Test duplicate cron job error"
+    steps:
+      - Send a request to create a duplicate cron job
+    expected_result: "Response code 400 with error indicating job duplication"
