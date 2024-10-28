@@ -5,7 +5,12 @@ import { DatabaseService } from '../services/database.service';
 import { DatabaseConfig } from '../services/types';
 import cron from 'node-cron';
 
-jest.mock('node-cron');
+jest.mock('node-cron', () => ({
+  schedule: jest.fn().mockImplementation(() => ({
+    stop: jest.fn().mockReturnValue(true), // Mock de la fonction stop
+  })),
+}));
+
 jest.mock('../services/backupService');
 jest.mock('socket.io');
 jest.mock('../services/database.service'); // Mock du DatabaseService
@@ -14,12 +19,12 @@ describe('CronService', () => {
   let cronService: CronService;
   let mockIo: jest.Mocked<SocketIOServer>;
   let mockBackupService: jest.Mocked<BackupService>;
-  let mockDatabaseService: jest.Mocked<DatabaseService>; // Création du mock de DatabaseService
+  let mockDatabaseService: jest.Mocked<DatabaseService>;
 
   beforeEach(() => {
     mockIo = new SocketIOServer() as jest.Mocked<SocketIOServer>;
-    mockDatabaseService = new DatabaseService() as jest.Mocked<DatabaseService>; // Initialisation du mock de DatabaseService
-    mockBackupService = new BackupService(mockDatabaseService) as jest.Mocked<BackupService>; // Injection de mockDatabaseService
+    mockDatabaseService = new DatabaseService() as jest.Mocked<DatabaseService>;
+    mockBackupService = new BackupService(mockDatabaseService) as jest.Mocked<BackupService>;
     cronService = new CronService(mockIo);
   });
 
@@ -37,6 +42,7 @@ describe('CronService', () => {
     cronService.startCronJob(jobName, schedule, dbConfig, mockBackupService);
 
     expect(cronService.listCronJobs()).toContain(jobName);
+    expect(cron.schedule).toHaveBeenCalledWith(schedule, expect.any(Function));
   });
 
   it('should throw an error if a cron job with the same name already exists', () => {
@@ -69,6 +75,8 @@ describe('CronService', () => {
     };
 
     cronService.startCronJob(jobName, schedule, dbConfig, mockBackupService);
+    expect(cronService.listCronJobs()).toContain(jobName);
+
     const result = cronService.stopCronJob(jobName);
 
     expect(result).toBe(true);

@@ -9,44 +9,47 @@ describe('DatabaseService', () => {
   let mockClient: jest.Mocked<PoolClient>;
 
   beforeEach(() => {
-    // Création de mockPool en tant que Pool et assignation explicite pour TypeScript
-    mockPool = new (Pool as unknown as jest.Mock<Pool>)() as jest.Mocked<Pool>;
-
-    // Création de mockClient en tant que PoolClient avec une fonction de libération définie
+    // Création des mocks pour Pool et PoolClient
+    mockPool = new Pool() as jest.Mocked<Pool>;
     mockClient = {
-      connect: jest.fn(),
+      release: jest.fn(),
       query: jest.fn(),
-      release: jest.fn(), // Assurez-vous que release est bien un mock
-      end: jest.fn(),
     } as unknown as jest.Mocked<PoolClient>;
 
-    (mockPool.connect as jest.Mock).mockResolvedValue(mockClient); // Résolution de connect avec le client mocké
+    // Assure que `connect` renvoie `mockClient`
+    (mockPool.connect as jest.Mock).mockResolvedValue(mockClient);
+
+    // Injecte `mockPool` dans `databaseService`
     databaseService = new DatabaseService();
-    (databaseService as any).pool = mockPool; // Injection du mockPool dans databaseService
+    (databaseService as any).pool = mockPool;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should connect to the database successfully', async () => {
     await databaseService.connect({
       database: 'test_db',
-      user: 'test_user',
-      password: 'test_password',
+      user: 'user',
+      password: 'pass',
       host: 'localhost',
       port: 5432,
     });
 
     expect(mockPool.connect).toHaveBeenCalled();
-    expect(mockClient.release).toHaveBeenCalled(); // Vérification que release est bien appelé
+    expect(mockClient.release).toHaveBeenCalled();
   });
 
   it('should throw an error if database connection fails', async () => {
     const connectionError = new Error('Connection failed');
-    (mockPool.connect as jest.Mock).mockRejectedValue(connectionError); // Mock de rejet pour simulateur une erreur
+    (mockPool.connect as jest.Mock).mockRejectedValue(connectionError);
 
     await expect(
       databaseService.connect({
         database: 'test_db',
-        user: 'test_user',
-        password: 'test_password',
+        user: 'user',
+        password: 'pass',
         host: 'localhost',
         port: 5432,
       })
