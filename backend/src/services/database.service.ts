@@ -67,12 +67,10 @@ export class DatabaseService {
     return new Pool(newConfig);
   }
 
-  
   setPool(newPool: Pool): void {
     if (this.pool) {
       this.pool.end(); // Close the old pool
     }
     this.pool = newPool;
   }
-  
 }
