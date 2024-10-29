@@ -3,7 +3,7 @@ name: Run Test
 on:
   pull_request:
     branches:
-      - main
+      - ci/cd
 
 jobs:
   test:
