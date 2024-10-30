@@ -1,0 +1,151 @@
+tests:
+  - fichier: src/test/databaseService.test.ts
+    description: Tests unitaires pour le service de base de données (DatabaseService)
+    tests:
+      - nom: initialisation du pool de connexions
+        contexte: "Le pool de connexions n'est pas initialisé."
+        description: Vérifie que `initializePool` initialise le pool de connexions avec les paramètres fournis.
+        configuration:
+          - paramètres: PoolConfig
+        actions:
+          - Appeler `initializePool` avec PoolConfig
+        resultat_attendu: "Le pool est initialisé avec succès sans erreurs."
+
+      - nom: connexion réussie
+        contexte: "Le pool de connexions est déjà initialisé."
+        description: Vérifie que la méthode `connect` se connecte correctement et libère le client.
+        configuration:
+          - Mocker `connect` pour renvoyer un client
+        actions:
+          - Appeler `connect` avec PoolConfig
+        resultat_attendu: "Le message 'Connected to database' est affiché et le client est libéré."
+
+      - nom: gestion des erreurs de connexion
+        contexte: "Erreur de connexion simulée."
+        description: Vérifie que `connect` gère correctement les erreurs de connexion en loggant une erreur et en levant une exception.
+        configuration:
+          - Mocker `connect` pour échouer
+        actions:
+          - Appeler `connect`
+        resultat_attendu: "Une erreur est loggée et une exception est levée avec 'Connection failed'."
+
+      - nom: récupération des contenus de la base de données
+        contexte: "Des tables et leurs contenus existent dans la base de données."
+        description: Vérifie que `getDatabaseContents` récupère correctement les tables et leurs contenus.
+        configuration:
+          - Mocker `query` pour renvoyer des tables et du contenu
+        actions:
+          - Appeler `getDatabaseContents`
+        resultat_attendu: "Un objet avec les noms des tables et les contenus est retourné."
+
+  - fichier: src/test/backupService.test.ts
+    description: Tests unitaires pour le service de sauvegarde (BackupService)
+    tests:
+      - nom: création des tables de sauvegarde
+        contexte: "Les tables `backup` et `backup_history` n'existent pas encore."
+        description: Vérifie que `checkBackupTables` crée les tables `backup` et `backup_history`.
+        configuration:
+          - Mocker `query` pour création de tables
+        actions:
+          - Appeler `checkBackupTables`
+        resultat_attendu: "Les tables sont créées si elles n'existent pas."
+
+      - nom: création de sauvegarde réussie
+        contexte: "La base de données est accessible."
+        description: Vérifie que `createDump` crée un fichier de dump et sauvegarde l'information.
+        configuration:
+          - Mocker `exec` pour simuler la création de dump
+          - Mocker `saveBackupInfo` et `saveBackupHistoryInfo`
+        actions:
+          - Appeler `createDump` avec une configuration de base de données
+        resultat_attendu: "Le fichier de sauvegarde est créé et les informations sont enregistrées."
+
+      - nom: gestion d'erreur pour la création de dump
+        contexte: "Erreur lors de l'exécution de la commande de dump."
+        description: Vérifie que `createDump` gère une erreur lors de la création de dump.
+        configuration:
+          - Mocker `exec` pour échouer
+        actions:
+          - Appeler `createDump`
+        resultat_attendu: "Une exception est levée et un message d'erreur est loggé."
+
+      - nom: restauration de base de données
+        contexte: "Un fichier de sauvegarde existe et peut être utilisé."
+        description: Vérifie que `restoreDatabase` restaure correctement la base de données depuis le fichier de sauvegarde.
+        configuration:
+          - Mocker `exec` et `access`
+        actions:
+          - Appeler `restoreDatabase` avec l'ID de sauvegarde
+        resultat_attendu: "La base de données est restaurée avec succès."
+
+  - fichier: src/test/backupController.test.ts
+    description: Tests d'intégration pour le contrôleur de sauvegarde (BackupController)
+    tests:
+      - nom: création de sauvegarde réussie
+        contexte: "Base de données valide fournie."
+        description: Vérifie que la route de création de sauvegarde fonctionne et renvoie un succès.
+        configuration:
+          - Mocker `createDump`
+        actions:
+          - Appeler `createBackup` avec une requête valide
+        resultat_attendu: "Le code 200 et un message de succès sont renvoyés avec le chemin de sauvegarde."
+
+      - nom: gestion d'erreur réseau
+        contexte: "Erreur réseau pendant la création de sauvegarde."
+        description: Simule une erreur réseau pour vérifier la gestion des erreurs.
+        configuration:
+          - Mocker `createDump` pour renvoyer une erreur réseau
+        actions:
+          - Appeler `createBackup`
+        resultat_attendu: "Un code 500 est renvoyé avec un message d'erreur et les détails."
+
+      - nom: récupération de l'historique des sauvegardes
+        contexte: "Historique des sauvegardes avec pagination."
+        description: Vérifie que `getBackupHistory` retourne correctement les données avec pagination.
+        configuration:
+          - Mocker `getBackupHistory` avec des données paginées
+        actions:
+          - Appeler `getBackupHistory` avec des paramètres de pagination
+        resultat_attendu: "Le code 200 et l'historique des sauvegardes sont renvoyés avec pagination."
+
+  - fichier: src/test/cronController.test.ts
+    description: Tests d'intégration pour le contrôleur des tâches cron (CronController)
+    tests:
+      - nom: démarrage d'une tâche cron
+        contexte: "Aucune tâche cron existante avec ce nom."
+        description: Vérifie que `startCron` ajoute correctement une nouvelle tâche cron.
+        configuration:
+          - Mocker `startCronJob`
+        actions:
+          - Appeler `startCron` avec un job valide
+        resultat_attendu: "Un message de succès est renvoyé confirmant l'ajout de la tâche."
+
+      - nom: erreur de duplication de tâche cron
+        contexte: "Une tâche cron avec ce nom existe déjà."
+        description: Simule une duplication de tâche cron pour vérifier la gestion des erreurs.
+        configuration:
+          - Mocker `startCronJob` pour renvoyer une erreur de duplication
+        actions:
+          - Appeler `startCron`
+        resultat_attendu: "Un code 400 est renvoyé avec un message d'erreur spécifique."
+
+  - fichier: src/test/databaseController.test.ts
+    description: Tests d'intégration pour le contrôleur de base de données (DatabaseController)
+    tests:
+      - nom: connexion à la base de données
+        contexte: "Connexion avec des informations valides."
+        description: Vérifie que `connect` se connecte correctement à la base de données.
+        configuration:
+          - Mocker `connect` pour succès
+        actions:
+          - Appeler `connect`
+        resultat_attendu: "Le code 200 et un message de succès sont renvoyés."
+
+      - nom: gestion d'erreur de connexion
+        contexte: "Erreur de connexion simulée."
+        description: Vérifie que le contrôleur gère les erreurs de connexion et renvoie un code 500.
+        configuration:
+          - Mocker `connect` pour échec
+        actions:
+          - Appeler `connect`
+        resultat_attendu: "Le code 500 et un message d'erreur sont renvoyés."
