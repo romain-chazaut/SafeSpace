@@ -1,0 +1,119 @@
+.connections-container {
+  flex: 1;
+  padding: 50px;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.connections-title {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+  border-bottom: 3px solid #FFC007; /* Changé pour une couleur bleue */
+  padding-bottom: 5px;
+}
+
+.connections-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.connections-loading,
+.connections-error,
+.connections-no-data {
+  padding: 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.connections-loading {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.connections-error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.connections-no-data {
+  background-color: #e1f5fe;
+  color: #0277bd;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.connections-table {
+  width: auto;
+  max-width: calc(100% - 40px);
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.connections-table th,
+.connections-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.connections-table th {
+  background-color: #3498db;
+  color: white;
+}
+
+.connections-table tr:nth-child(even) {
+  background-color: #ecf0f1;
+}
+
+.connections-table tr:hover {
+  background-color: #d5e8f7;
+}
+
+.refresh-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.refresh-button svg {
+  margin-right: 8px;
+}
+
+.refresh-button:hover {
+  background-color: #2980b9;
+}
+
+.query-cell {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media screen and (max-width: 768px) {
+  .connections-title {
+    font-size: 20px;
+  }
+
+  .connections-description {
+    font-size: 12px;
+  }
+
+  .connections-table th,
+  .connections-table td {
+    padding: 8px;
+  }
+}

@@ -1,0 +1,26 @@
+name: GitHub Actions Demo avec notification Google Chat
+run-name: ${{ github.actor }} teste GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 Le job a été automatiquement déclenché par un événement ${{ github.event_name }}."
+      - run: echo "🐧 Ce job s'exécute maintenant sur un serveur ${{ runner.os }} hébergé par GitHub!"
+      - run: echo "🔎 Le nom de votre branche est ${{ github.ref }} et votre dépôt est ${{ github.repository }}."
+      - name: Checkout du code du dépôt
+        uses: actions/checkout@v4
+      - run: echo "💡 Le dépôt ${{ github.repository }} a été cloné sur le runner."
+      - run: echo "🖥️ Le workflow est maintenant prêt à tester votre code sur le runner."
+      - name: Liste des fichiers dans le dépôt
+        run: |
+          ls ${{ github.workspace }}
+      - run: echo "🍏 Le statut de ce job est ${{ job.status }}."
+
+      - name: Envoyer une notification à Google Chat
+        uses: google-github-actions/send-google-chat-webhook@v0.0.2
+        with:
+          webhook_url: '${{ secrets.GOOGLE_CHAT_WEBHOOK }}'
+          message: |
+            🚀 Notification de GitHub Actions !
+            Le workflow pour le dépôt `${{ github.repository }}` s'est terminé avec le statut `${{ job.status }}`.

@@ -1,0 +1,135 @@
+.restore-container {
+  flex: 1;
+  padding: 50px;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.restore-title {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+  border-bottom: 3px solid #F44336; /* Couleur bleue pour le thème de restauration */
+  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.restore-title svg {
+  margin-right: 10px;
+}
+
+.restore-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.restore-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.restore-form h3 {
+  color: #333;
+  font-size: 18px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.restore-form h3 svg {
+  margin-right: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.restore-button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.restore-button:hover {
+  background-color: #357abd;
+}
+
+.restore-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.restore-button svg {
+  margin-right: 8px;
+}
+
+.restore-loading,
+.restore-error,
+.restore-success {
+  padding: 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.restore-loading {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.restore-error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.restore-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+@media screen and (max-width: 768px) {
+  .restore-container {
+    padding: 20px;
+  }
+
+  .restore-title {
+    font-size: 20px;
+  }
+
+  .restore-description {
+    font-size: 12px;
+  }
+
+  .restore-form input,
+  .restore-button {
+    font-size: 14px;
+  }
+}

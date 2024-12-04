@@ -1,0 +1,120 @@
+.backup-container {
+  flex: 1;
+  padding: 50px;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.backup-title {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+  border-bottom: 3px solid #28a745; /* Couleur verte pour le thème de sauvegarde */
+  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.backup-title svg {
+  margin-right: 10px;
+}
+
+.backup-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.backup-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.backup-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+.backup-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.backup-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.backup-button:hover {
+  background-color: #218838;
+}
+
+.backup-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.backup-button svg {
+  margin-right: 8px;
+}
+
+.backup-loading,
+.backup-error,
+.backup-success {
+  padding: 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.backup-loading {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.backup-error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.backup-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+@media screen and (max-width: 768px) {
+  .backup-container {
+    padding: 20px;
+  }
+
+  .backup-title {
+    font-size: 20px;
+  }
+
+  .backup-description {
+    font-size: 12px;
+  }
+
+  .backup-form input,
+  .backup-button {
+    font-size: 14px;
+  }
+}
