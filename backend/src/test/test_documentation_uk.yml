@@ -1,0 +1,151 @@
+tests:
+  - file: src/test/databaseService.test.ts
+    description: Unit tests for the database service (DatabaseService)
+    tests:
+      - name: connection pool initialization
+        context: "Connection pool is not initialized."
+        description: Verifies that `initializePool` initializes the pool with provided parameters.
+        setup:
+          - parameters: PoolConfig
+        actions:
+          - Call `initializePool` with PoolConfig
+        expected_result: "The pool is successfully initialized without errors."
+
+      - name: successful connection
+        context: "Connection pool is already initialized."
+        description: Checks that `connect` connects and releases the client afterward.
+        setup:
+          - Mock `connect` to return a client
+        actions:
+          - Call `connect` with PoolConfig
+        expected_result: "The 'Connected to database' message is displayed and client is released."
+
+      - name: connection error handling
+        context: "Simulated connection error."
+        description: Ensures `connect` logs an error and throws an exception if connection fails.
+        setup:
+          - Mock `connect` to fail
+        actions:
+          - Call `connect`
+        expected_result: "An error is logged, and an exception with 'Connection failed' is thrown."
+
+      - name: retrieving database contents
+        context: "Tables and their contents exist in the database."
+        description: Checks that `getDatabaseContents` retrieves tables and their contents correctly.
+        setup:
+          - Mock `query` to return tables and content
+        actions:
+          - Call `getDatabaseContents`
+        expected_result: "An object with table names and contents is returned."
+
+  - file: src/test/backupService.test.ts
+    description: Unit tests for the backup service (BackupService)
+    tests:
+      - name: backup tables creation
+        context: "`backup` and `backup_history` tables do not exist yet."
+        description: Checks that `checkBackupTables` creates backup and history tables.
+        setup:
+          - Mock `query` for table creation
+        actions:
+          - Call `checkBackupTables`
+        expected_result: "Tables are created if they do not exist."
+
+      - name: successful backup creation
+        context: "Database is accessible."
+        description: Ensures `createDump` creates a dump file and saves information.
+        setup:
+          - Mock `exec` to simulate dump creation
+          - Mock `saveBackupInfo` and `saveBackupHistoryInfo`
+        actions:
+          - Call `createDump` with database config
+        expected_result: "Backup file is created, and information is saved."
+
+      - name: dump creation error handling
+        context: "Error during dump command execution."
+        description: Checks that `createDump` handles errors during dump creation.
+        setup:
+          - Mock `exec` to fail
+        actions:
+          - Call `createDump`
+        expected_result: "An exception is thrown, and an error message is logged."
+
+      - name: database restoration
+        context: "A backup file exists and is accessible."
+        description: Checks that `restoreDatabase` restores the database from a backup file.
+        setup:
+          - Mock `exec` and `access`
+        actions:
+          - Call `restoreDatabase` with backup ID
+        expected_result: "The database is restored successfully."
+
+  - file: src/test/backupController.test.ts
+    description: Integration tests for the backup controller (BackupController)
+    tests:
+      - name: successful backup creation
+        context: "Valid database provided."
+        description: Verifies that the backup creation route works and returns success.
+        setup:
+          - Mock `createDump`
+        actions:
+          - Call `createBackup` with valid request
+        expected_result: "Status code 200 and success message returned with backup path."
+
+      - name: network error handling
+        context: "Network error during backup creation."
+        description: Simulates network error to verify error handling.
+        setup:
+          - Mock `createDump` to return a network error
+        actions:
+          - Call `createBackup`
+        expected_result: "Status code 500 returned with error message and details."
+
+      - name: retrieving backup history with pagination
+        context: "Backup history with pagination."
+        description: Ensures `getBackupHistory` returns data with correct pagination.
+        setup:
+          - Mock `getBackupHistory` with paginated data
+        actions:
+          - Call `getBackupHistory` with pagination parameters
+        expected_result: "Status code 200 and backup history with pagination returned."
+
+  - file: src/test/cronController.test.ts
+    description: Integration tests for the cron job controller (CronController)
+    tests:
+      - name: successful cron job scheduling
+        context: "No existing cron job with this name."
+        description: Verifies `startCron` correctly adds a new cron job.
+        setup:
+          - Mock `startCronJob`
+        actions:
+          - Call `startCron` with valid job
+        expected_result: "A success message confirming job addition is returned."
+
+      - name: cron job duplication error
+        context: "A cron job with this name already exists."
+        description: Simulates cron job duplication to verify error handling.
+        setup:
+          - Mock `startCronJob` to return duplication error
+        actions:
+          - Call `startCron`
+        expected_result: "Status code 400 returned with specific error message."
+
+  - file: src/test/databaseController.test.ts
+    description: Integration tests for the database controller (DatabaseController)
+    tests:
+      - name: successful database connection
+        context: "Connection with valid information."
+        description: Checks that `connect` connects successfully to the database.
+        setup:
+          - Mock `connect` for success
+        actions:
+          - Call `connect`
+        expected_result: "Status code 200 and success message returned."
+
+      - name: connection error handling
+        context: "Simulated connection error."
+        description: Verifies controller handles connection errors and returns code 500.
+        setup:
+          - Mock `connect` to fail
+        actions:
+          - Call `connect`
+        expected_result: "Status code 500 and error message returned."

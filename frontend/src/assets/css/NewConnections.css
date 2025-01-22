@@ -1,0 +1,160 @@
+.main-content {
+  flex: 1;
+  padding: 50px;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.centered-content {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.new-connection h1 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+  border-bottom: 3px solid #9C27B0; /* Blue color for database theme */
+  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.new-connection h1 svg {
+  margin-right: 10px;
+}
+
+.description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.new-connection form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  background-color: #9C27B0;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+button svg {
+  margin-right: 8px;
+}
+
+.message {
+  padding: 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.message.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.connection-status {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 40px; /* Espace pour le bouton */
+}
+
+.toggle-password {
+  position: absolute;
+  top: 34%;
+  right: 10px;
+  transform: translateY(-40%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.toggle-password svg {
+  width: 20px;
+  height: 20px;
+  color: #b7b4b4;
+}
+
+/* .toggle-password:hover svg {
+  color: #333;
+} */
+
+@media screen and (max-width: 768px) {
+  .main-content {
+    padding: 20px;
+  }
+
+  .new-connection h1 {
+    font-size: 20px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+
+  .form-group input,
+  button {
+    font-size: 14px;
+  }
+}

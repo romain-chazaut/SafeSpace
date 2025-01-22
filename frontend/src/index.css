@@ -1,0 +1,92 @@
+/* Style global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Assure que le padding et les bordures sont inclus dans la largeur totale */
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+  line-height: 1.6;
+}
+
+/* Navigation latérale */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #000;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 15px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  color: #ffffff; /* Changé à blanc pour la visibilité sur fond noir */
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.sidebar a svg {
+  margin-right: 10px;
+}
+
+/* Conteneur principal pour le contenu */
+.main-content {
+  flex-grow: 1; /* Permet au contenu principal de prendre tout l'espace disponible */
+  margin-left: 250px; /* Correspond à la largeur de la sidebar */
+  padding: 10px; /* Ajoute du padding autour du contenu */
+  width: calc(100% - 20Z0px); /* Largeur totale moins la largeur de la sidebar */
+}
+
+/* Styles pour le contenu spécifique */
+.container {
+  max-width: none; /* Permet au conteneur de prendre toute la largeur */
+  margin: 0 auto; /* Centre le conteneur sur l'écran */
+  padding: 10px; /* Ajoute du padding autour du contenu */
+}
+
+/* Autres styles généraux */
+h1 {
+  font-size: 2.5rem;
+  color: #000000;
+}
+
+table {
+    width: calc(100% - (padding ou marges)); /* Assurez-vous que les tables prennent également toute la largeur disponible */
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    padding: 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+@media (max-width:768px) {
+    .sidebar {
+        width:100%;
+        height:auto; 
+        position:absolute; 
+    }
+
+    .main-content {
+        margin-left:0; 
+        width:auto; 
+    }
+}

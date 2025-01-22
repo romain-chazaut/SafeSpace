@@ -1,0 +1,67 @@
+
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: adminpassword
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+  backend:
+    build: 
+      context: ./backend
+    container_name: backend_container
+    restart: always
+    ports:
+      - "3000:3000" 
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=mysecretpassword
+      - DB_NAME=postgres
+    volumes:
+      - backend_src:/backend
+      - backend_backups:/backend/backups
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3000"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: frontend_container
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - frontend_src:/frontend
+      - /frontend/node_modules
+
+volumes:
+  postgres_data:
+  backend_backups:
+  backend_src:
+  frontend_src:

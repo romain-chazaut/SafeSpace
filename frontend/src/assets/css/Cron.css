@@ -1,0 +1,166 @@
+.cron-container {
+  flex: 1;
+  padding: 50px;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.cron-title {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+  border-bottom: 3px solid #28a745;
+  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.cron-title svg {
+  margin-right: 10px;
+}
+
+.cron-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.cron-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.cron-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+.cron-form input[type="text"],
+.cron-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.cron-form textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.cron-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.cron-button:hover {
+  background-color: #218838;
+}
+
+.cron-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.cron-button svg {
+  margin-right: 8px;
+}
+
+.cron-list {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cron-list h2 {
+  color: #333;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.cron-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.cron-list li {
+  border-bottom: 1px solid #ecf0f1;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cron-list li:last-child {
+  border-bottom: none;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.error-message,
+.success-message {
+  padding: 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.success-message {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+@media screen and (max-width: 768px) {
+  .cron-container {
+    padding: 20px;
+  }
+
+  .cron-title {
+    font-size: 20px;
+  }
+
+  .cron-description {
+    font-size: 12px;
+  }
+
+  .cron-form input[type="text"],
+  .cron-form textarea,
+  .cron-button {
+    font-size: 14px;
+  }
+}
